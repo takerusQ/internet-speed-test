@@ -256,3 +256,43 @@ ax6.imshow(original2, cmap=plt.cm.Greys_r)
 
 fig.tight_layout()
 plt.show()
+
+
+
+
+このファイルの目的は、『aortic archのatlasを作成する』こと。 この段階では自動化する必要はない。 処理としては以下がある。
+
+Resize to a resolution of 1mm^3 using bicubic interopration
+Automatically segment lungs using thresholding and volumes cropped to localise the top of the heart
+Rescale contrasts
+Images were smoothed of high-frequency artifacts using a median filter
+Raycasting was used to extract the heart cavity between the lungs
+The heart muscle was automatically segmented using kmeans (k=4)
+Cleaned of peripheral blood vessels
+このうちstep 6以降は3D処理とする。
+
+# 1人の1枚のdicom画像で確認していく
+example_person_dicom_dir_path = \
+    "/content/drive/Shareddrives/複数手法を用いた256画素CT画像の主観評価/本番環境/data/2_1_島村先生にアップロード頂いたファイルの整理dataのうち必要な患者のseries2のdata/0010_20190710_2"
+
+aaa = os.listdir(example_person_dicom_dir_path)
+aaa = sorted(aaa)
+
+
+# 1人の1枚のdicom画像で確認していく
+example_slice_of_example_person_dicom_dir_path = \
+    example_person_dicom_dir_path + "/" + aaa[10]
+
+
+d = pydicom.dcmread(example_slice_of_example_person_dicom_dir_path)
+hu = d.pixel_array
+
+# resize
+hu_resized = cv2.resize(hu,dsize=None,fx=(d.ReconstructionDiameter / 512),fy=(d.ReconstructionDiameter / 512),interpolation=cv2.INTER_CUBIC)
+
+# d.ReconstructionDiameter / 512 、が●mm/pixelを表す（この●は人によって異なることに注意）
+# fx, fyは上記の逆数が正しいかと思ったが、上記が正しかった。
+
+# resizeされた画像の表示 # しっかりと512*512よりも小さくなったことがわかる
+plt.imshow(hu_resized, cmap=plt.cm.Greys_r)
+plt.colorbar()
