@@ -159,6 +159,65 @@ plt.show()
 
 ここから本番
 
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+# フローチャートの作成
+fig, ax = plt.subplots(figsize=(14, 8))
+
+# 各ブロックの位置とラベル
+blocks = [
+    {"pos": (0, 5), "width": 3, "height": 1, "label": "Start", "desc": ""},
+    {"pos": (0, 4), "width": 3, "height": 1, "label": "Generate 512x512 Image Data", "desc": "512x512のダミー画像データを生成"},
+    {"pos": (0, 3), "width": 3, "height": 1, "label": "Check Data Shape", "desc": "データの形状が (512, 512, 1) であるか確認"},
+    {"pos": (0, 2), "width": 3, "height": 1, "label": "Flatten Data", "desc": "画像データをフラット化"},
+    {"pos": (0, 1), "width": 3, "height": 1, "label": "Initialize Weights", "desc": "重みをランダムに初期化"},
+    {"pos": (5, 4), "width": 3, "height": 1, "label": "Forward Pass", "desc": "データを隠れ層に通し、活性化関数を適用"},
+    {"pos": (5, 3), "width": 3, "height": 1, "label": "Calculate Loss", "desc": "再構築された出力と元のデータとの損失を計算"},
+    {"pos": (5, 2), "width": 3, "height": 1, "label": "Backpropagation", "desc": "誤差を計算し、重みを更新"},
+    {"pos": (5, 1), "width": 3, "height": 1, "label": "Repeat for Epochs", "desc": "トレーニングループを所定のエポック数繰り返す"},
+    {"pos": (0, 0), "width": 3, "height": 1, "label": "Encode & Decode Data", "desc": "フラット化したデータをエンコードおよびデコード"},
+    {"pos": (5, 0), "width": 3, "height": 1, "label": "Reshape to Original", "desc": "デコードされたデータを元の形状に戻す"},
+]
+
+# 各ブロックを描画
+for block in blocks:
+    rect = Rectangle(block["pos"], block["width"], block["height"], edgecolor='black', facecolor='lightblue')
+    ax.add_patch(rect)
+    ax.text(block["pos"][0] + block["width"] / 2, block["pos"][1] + block["height"] / 2, block["label"], 
+            horizontalalignment='center', verticalalignment='center', fontsize=10)
+    ax.text(block["pos"][0] + block["width"] / 2, block["pos"][1] - 0.3, block["desc"], 
+            horizontalalignment='center', verticalalignment='center', fontsize=8)
+
+# 矢印を描画
+arrows = [
+    ((1.5, 5), (1.5, 4)),
+    ((1.5, 4), (1.5, 3)),
+    ((1.5, 3), (1.5, 2)),
+    ((1.5, 2), (1.5, 1)),
+    ((1.5, 1), (1.5, 0.5)),
+    ((1.5, 0.5), (4, 4.5)),
+    ((6.5, 4), (6.5, 3)),
+    ((6.5, 3), (6.5, 2)),
+    ((6.5, 2), (6.5, 1)),
+    ((6.5, 1), (6.5, 0.5)),
+    ((4.5, 0.5), (4.5, 0))
+]
+
+for start, end in arrows:
+    ax.arrow(start[0], start[1], end[0] - start[0], end[1] - start[1], 
+             head_width=0.2, head_length=0.2, fc='k', ec='k')
+
+# 図の調整
+ax.set_xlim(-1, 9)
+ax.set_ylim(-1, 6)
+ax.axis('off')
+
+# 図を表示
+plt.show()
+
+
+
 import numpy as np
 
 # 512x512の画像データを生成（ここではダミーデータ）
