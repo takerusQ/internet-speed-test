@@ -153,3 +153,83 @@ ax.axis('off')
 
 # 図を表示
 plt.show()
+
+
+
+
+ここから本番
+
+import numpy as np
+
+# 512x512の画像データを生成（ここではダミーデータ）
+data = np.random.rand(100, 512, 512, 1)  # 100個の512x512のグレースケール画像
+
+# データの形状確認
+if data.shape[1:] == (512, 512, 1):
+    print("データは (512, 512, 1) の形状を持っています。")
+else:
+    print("データは指定された形状を持っていません。")
+
+# 全ての画像の形状確認
+all_correct_shape = all(img.shape == (512, 512, 1) for img in data)
+if all_correct_shape:
+    print("すべての画像が (512, 512, 1) の形状を持っています。")
+else:
+    print("一部の画像が指定された形状を持っていません。")
+
+# ハイパーパラメータ
+input_dim = 512 * 512  # 512x512ピクセル
+encoding_dim = 128 * 128  # エンコードされた表現の次元数（例として128x128）
+learning_rate = 0.1
+epochs = 1000
+
+# データの前処理
+# 画像データをフラット化
+flat_data = data.reshape((data.shape[0], input_dim))
+
+# 重みの初期化
+weights_input_to_hidden = np.random.randn(input_dim, encoding_dim)
+weights_hidden_to_output = np.random.randn(encoding_dim, input_dim)
+
+# 活性化関数とその微分
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# トレーニングループ
+for epoch in range(epochs):
+    # フォワードパス
+    hidden_layer_activation = np.dot(flat_data, weights_input_to_hidden)
+    hidden_layer_output = sigmoid(hidden_layer_activation)
+    
+    output_layer_activation = np.dot(hidden_layer_output, weights_hidden_to_output)
+    reconstructed_output = sigmoid(output_layer_activation)
+    
+    # 損失の計算（平均二乗誤差）
+    loss = np.mean((flat_data - reconstructed_output) ** 2)
+    
+    # バックプロパゲーション
+    error = flat_data - reconstructed_output
+    d_output = error * sigmoid_derivative(reconstructed_output)
+    
+    error_hidden_layer = d_output.dot(weights_hidden_to_output.T)
+    d_hidden_layer = error_hidden_layer * sigmoid_derivative(hidden_layer_output)
+    
+    # 重みの更新
+    weights_hidden_to_output += hidden_layer_output.T.dot(d_output) * learning_rate
+    weights_input_to_hidden += flat_data.T.dot(d_hidden_layer) * learning_rate
+    
+    if epoch % 100 == 0:
+        print(f'Epoch {epoch}, Loss: {loss}')
+
+# テストデータをエンコードおよびデコード
+encoded_data = sigmoid(np.dot(flat_data, weights_input_to_hidden))
+decoded_data = sigmoid(np.dot(encoded_data, weights_hidden_to_output))
+
+# 元の形状に戻す
+decoded_images = decoded_data.reshape((data.shape[0], 512, 512, 1))
+
+print("Original Data Shape:", data[0].shape)
+print("Reconstructed Data Shape:", decoded_images[0].shape)
