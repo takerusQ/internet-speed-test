@@ -111,3 +111,45 @@ ax.axis('off')
 # 図を表示
 plt.show()
 
+
+
+
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# 各層の位置とラベル
+layers = [
+    {"pos": (0, 0), "width": 2, "height": 5, "label": "Input\n64x64x64"},
+    {"pos": (2, 0.5), "width": 2, "height": 4, "label": "Conv3D + MaxPooling\n32 Filters\n32x32x32"},
+    {"pos": (4, 1), "width": 2, "height": 3, "label": "Conv3D + MaxPooling\n64 Filters\n16x16x16"},
+    {"pos": (6, 1.5), "width": 2, "height": 2, "label": "Conv3D + MaxPooling\n128 Filters\n8x8x8"},
+    {"pos": (8, 1.5), "width": 2, "height": 2, "label": "Encoded\n128 Filters\n8x8x8"},
+    {"pos": (10, 1.5), "width": 2, "height": 2, "label": "Conv3D + UpSampling\n128 Filters\n8x8x8"},
+    {"pos": (12, 1), "width": 2, "height": 3, "label": "Conv3D + UpSampling\n64 Filters\n16x16x16"},
+    {"pos": (14, 0.5), "width": 2, "height": 4, "label": "Conv3D + UpSampling\n32 Filters\n32x32x32"},
+    {"pos": (16, 0), "width": 2, "height": 5, "label": "Output\n64x64x64"},
+]
+
+# 各層を描画
+for layer in layers:
+    rect = Rectangle(layer["pos"], layer["width"], layer["height"], edgecolor='black', facecolor='lightblue')
+    ax.add_patch(rect)
+    ax.text(layer["pos"][0] + layer["width"] / 2, layer["pos"][1] + layer["height"] / 2, layer["label"], 
+            horizontalalignment='center', verticalalignment='center', fontsize=10)
+
+# 矢印を描画
+for i in range(len(layers) - 1):
+    ax.arrow(layers[i]["pos"][0] + layers[i]["width"], layers[i]["pos"][1] + layers[i]["height"] / 2,
+             layers[i + 1]["pos"][0] - layers[i]["pos"][0] - layers[i]["width"], 0,
+             head_width=0.3, head_length=0.3, fc='k', ec='k')
+
+# 図の調整
+ax.set_xlim(-1, 19)
+ax.set_ylim(-1, 7)
+ax.axis('off')
+
+# 図を表示
+plt.show()
