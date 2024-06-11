@@ -292,3 +292,102 @@ decoded_images = decoded_data.reshape((data.shape[0], 512, 512, 1))
 
 print("Original Data Shape:", data[0].shape)
 print("Reconstructed Data Shape:", decoded_images[0].shape)
+
+
+＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃
+上記はRAMクラッシュする
+＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃
+
+効率を向上させ、メモリの使用量を減らすためにいくつかの最適化を行います。以下のように変更を加えます。
+
+データセットのサイズを減らす。
+トレーニングループ内でのメモリ使用を効率化する。
+重みの更新をバッチ処理で行う。
+以下に修正したコードを示します。
+この変更により、メモリ使用量が大幅に減少し、CPUの負荷も軽減されるはずです。
+バッチサイズを小さくすることで、一度に処理するデータ量を制限し、メモリの負荷を軽減しています。
+また、エポック数とデータセットのサイズも減らすことで、トレーニングの効率を向上させました。
+
+import numpy as np
+import gc  # ガベージコレクションのインポート
+
+# 512x512の画像データを生成（ここではダミーデータ）
+data = np.random.rand(10, 512, 512, 1)  # 10個の512x512のグレースケール画像に減らす
+
+# データの形状確認
+if data.shape[1:] == (512, 512, 1):
+    print("データは (512, 512, 1) の形状を持っています。")
+else:
+    print("データは指定された形状を持っていません。")
+
+# 全ての画像の形状確認
+all_correct_shape = all(img.shape == (512, 512, 1) for img in data)
+if all_correct_shape:
+    print("すべての画像が (512, 512, 1) の形状を持っています。")
+else:
+    print("一部の画像が指定された形状を持っていません。")
+
+# ハイパーパラメータ
+input_dim = 512 * 512  # 512x512ピクセル
+encoding_dim = 8 * 8  # エンコードされた表現の次元数（例として128x128）
+learning_rate = 0.01
+epochs = 100  # エポック数を減らす
+batch_size = 2  # バッチサイズを設定
+
+# データの前処理
+# 画像データをフラット化
+flat_data = data.reshape((data.shape[0], input_dim))
+
+# 重みの初期化
+weights_input_to_hidden = np.random.randn(input_dim, encoding_dim) * 0.01
+weights_hidden_to_output = np.random.randn(encoding_dim, input_dim) * 0.01
+
+# 活性化関数とその微分
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# トレーニングループ
+for epoch in range(epochs):
+    for i in range(0, flat_data.shape[0], batch_size):
+        batch_data = flat_data[i:i + batch_size]
+
+        # フォワードパス
+        hidden_layer_activation = np.dot(batch_data, weights_input_to_hidden)
+        hidden_layer_output = sigmoid(hidden_layer_activation)
+
+        output_layer_activation = np.dot(hidden_layer_output, weights_hidden_to_output)
+        reconstructed_output = sigmoid(output_layer_activation)
+
+        # 損失の計算（平均二乗誤差）
+        loss = np.mean((batch_data - reconstructed_output) ** 2)
+
+        # バックプロパゲーション
+        error = batch_data - reconstructed_output
+        d_output = error * sigmoid_derivative(reconstructed_output)
+
+        error_hidden_layer = d_output.dot(weights_hidden_to_output.T)
+        d_hidden_layer = error_hidden_layer * sigmoid_derivative(hidden_layer_output)
+
+        # 重みの更新
+        weights_hidden_to_output += hidden_layer_output.T.dot(d_output) * learning_rate
+        weights_input_to_hidden += batch_data.T.dot(d_hidden_layer) * learning_rate
+
+        # メモリのクリアリング
+        del batch_data, hidden_layer_activation, hidden_layer_output, output_layer_activation, reconstructed_output, error, d_output, error_hidden_layer, d_hidden_layer
+        gc.collect()
+
+    if epoch % 10 == 0:
+        print(f'Epoch {epoch}, Loss: {loss}')
+
+# テストデータをエンコードおよびデコード
+encoded_data = sigmoid(np.dot(flat_data, weights_input_to_hidden))
+decoded_data = sigmoid(np.dot(encoded_data, weights_hidden_to_output))
+
+# 元の形状に戻す
+decoded_images = decoded_data.reshape((data.shape[0], 512, 512, 1))
+
+print("Original Data Shape:", data[0].shape)
+print("Reconstructed Data Shape:", decoded_images[0].shape)
