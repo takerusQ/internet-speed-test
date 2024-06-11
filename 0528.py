@@ -454,3 +454,35 @@ styled_df = df.style.apply(highlight_cells, axis=None)\
 # 表示
 styled_df
 
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+from io import BytesIO
+from PIL import Image
+import imgkit
+
+# データフレームのスタイル設定
+def highlight_cells(x):
+    color = 'background-color: yellow'
+    df_styler = pd.DataFrame('', index=x.index, columns=x.columns)
+    df_styler.iloc[:, 1:] = df_styler.iloc[:, 1:].where(x.iloc[:, 1:] != "〇", color)
+    return df_styler
+
+styled_df = df.style.apply(highlight_cells, axis=None)\
+                    .set_table_styles([
+                        {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                        {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                    ])\
+                    .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# スタイル設定されたデータフレームをHTMLに変換
+html = styled_df.render()
+
+# HTMLをPNGに変換
+imgkit.from_string(html, 'styled_df.png')
+
+# PNGを表示して確認（任意）
+image = Image.open('styled_df.png')
+image.show()
