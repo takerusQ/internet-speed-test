@@ -1,3 +1,45 @@
+
+)
+
+# ウィンドウ幅とウィンドウレベルの設定（例として設定）
+window_width = 1500
+window_level = 400
+
+# ウィンドウ幅とウィンドウレベルを用いて正規化する関数
+def normalize_ct_image(image, window_width, window_level):
+    min_value = window_level - (window_width / 2)
+    max_value = window_level + (window_width / 2)
+    normalized_image = (image - min_value) / (max_value - min_value)
+    normalized_image[normalized_image < 0] = 0
+    normalized_image[normalized_image > 1] = 1
+    return normalized_image
+
+# 正規化
+normalized_ct_image = normalize_ct_image(ct_image, window_width, window_level)
+
+# ハイパーパラメータ
+input_dim = 512 * 512  # 512x512ピクセル
+encoding_dim = 64 * 64  # エンコードされた表現の次元数を小さくする（例として64x64）
+learning_rate = 0.01
+epochs = 100
+batch_size = 2
+
+# データの前処理
+flat_train_data = normalized_ct_image.reshape(1, input_dim)
+
+# 元の形状に戻す
+decoded_image = decoded_data.reshape(512, 512)
+
+# 再構築されたデータを元のCT値に戻す関数
+def denormalize_ct_image(normalized_image, window_width, window_level):
+    min_value = window_level - (window_width / 2)
+    max_value = window_level + (window_width / 2)
+    denormalized_image = normalized_image * (max_value - min_value) + min_value
+    return denormalized_image
+
+# 再構築された画像を元のCT値に戻す
+denormalized_ct_image = denormalize_ct_image(decoded_image, window_width, window_level)
+
 LossとValidation Lossの推移を確認するためのコードの例を示します。
 
 
