@@ -1,44 +1,38 @@
 
-)
+import numpy as np
+import matplotlib.pyplot as plt
 
-# ウィンドウ幅とウィンドウレベルの設定（例として設定）
-window_width = 1500
-window_level = 400
+# 画像の変化を可視化する
+def plot_images(original, decoded, n=5):
+    plt.figure(figsize=(15, 5))
+    for i in range(n):
+        # オリジナル画像
+        ax = plt.subplot(3, n, i + 1)
+        plt.imshow(original[i].reshape(512, 512), cmap="gray")
+        plt.title("Original")
+        plt.axis("off")
 
-# ウィンドウ幅とウィンドウレベルを用いて正規化する関数
-def normalize_ct_image(image, window_width, window_level):
-    min_value = window_level - (window_width / 2)
-    max_value = window_level + (window_width / 2)
-    normalized_image = (image - min_value) / (max_value - min_value)
-    normalized_image[normalized_image < 0] = 0
-    normalized_image[normalized_image > 1] = 1
-    return normalized_image
+        # 再構築された画像
+        ax = plt.subplot(3, n, i + 1 + n)
+        plt.imshow(decoded[i].reshape(512, 512), cmap="gray")
+        plt.title("Reconstructed")
+        plt.axis("off")
 
-# 正規化
-normalized_ct_image = normalize_ct_image(ct_image, window_width, window_level)
+        # 差分画像
+        difference = decoded[i] - original[i]
+        ax = plt.subplot(3, n, i + 1 + 2*n)
+        plt.imshow(difference.reshape(512, 512), cmap="bwr", vmin=-1, vmax=1)
+        plt.title("Difference")
+        plt.axis("off")
+    plt.show()
 
-# ハイパーパラメータ
-input_dim = 512 * 512  # 512x512ピクセル
-encoding_dim = 64 * 64  # エンコードされた表現の次元数を小さくする（例として64x64）
-learning_rate = 0.01
-epochs = 100
-batch_size = 2
+# テスト用データの生成
+original = np.random.rand(5, 512, 512)
+decoded = original + (np.random.rand(5, 512, 512) - 0.5) * 0.1
 
-# データの前処理
-flat_train_data = normalized_ct_image.reshape(1, input_dim)
+# 関数の実行
+plot_images(original, decoded, n=5)
 
-# 元の形状に戻す
-decoded_image = decoded_data.reshape(512, 512)
-
-# 再構築されたデータを元のCT値に戻す関数
-def denormalize_ct_image(normalized_image, window_width, window_level):
-    min_value = window_level - (window_width / 2)
-    max_value = window_level + (window_width / 2)
-    denormalized_image = normalized_image * (max_value - min_value) + min_value
-    return denormalized_image
-
-# 再構築された画像を元のCT値に戻す
-denormalized_ct_image = denormalize_ct_image(decoded_image, window_width, window_level)
 
 LossとValidation Lossの推移を確認するためのコードの例を示します。
 
