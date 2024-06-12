@@ -408,3 +408,42 @@ def plot_images(original, decoded, n=5):
 
 # トレーニングデータから最初の5つの画像を表示
 plot_images(train_data, decoded_images, n=5)
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 画像の変化を可視化する
+def plot_images(original, decoded):
+    plt.figure(figsize=(15, 5))
+    
+    # オリジナル画像
+    ax = plt.subplot(1, 3, 1)
+    plt.imshow(original, cmap="gray")
+    plt.title("Original")
+    plt.axis("off")
+
+    # 再構築された画像
+    ax = plt.subplot(1, 3, 2)
+    plt.imshow(decoded, cmap="gray")
+    plt.title("Reconstructed")
+    plt.axis("off")
+
+    # 差分画像
+    diff = original - decoded
+    diff_abs = np.abs(diff)
+    
+    # 差分の絶対値を指数的にスケーリング
+    diff_scaled = np.log1p(diff_abs)
+
+    ax = plt.subplot(1, 3, 3)
+    plt.imshow(diff_scaled, cmap="seismic", vmin=-np.max(diff_scaled), vmax=np.max(diff_scaled))
+    plt.title("Difference")
+    plt.axis("off")
+    
+    plt.colorbar(ax=plt.gca(), fraction=0.046, pad=0.04)
+    plt.show()
+
+# トレーニングデータから最初の1つの画像を表示
+plot_images(ct_image, denormalized_ct_image)
