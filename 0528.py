@@ -486,3 +486,29 @@ imgkit.from_string(html, 'styled_df.png')
 # PNGを表示して確認（任意）
 image = Image.open('styled_df.png')
 image.show()
+
+
+# 辞書形式をデータフレームに変換
+df = pd.DataFrame(data).transpose()
+
+# 特定の疾患を強調表示するスタイルを設定する関数
+def highlight_specific_rows(x):
+    df_styler = pd.DataFrame('', index=x.index, columns=x.columns)
+    specific_rows = ["Aortic Dissection", "Gastrointestinal Perforation"]
+    for row in specific_rows:
+        df_styler.loc[row, :] = 'background-color: red; color: white;'
+    return df_styler
+
+# スタイル設定されたデータフレーム
+styled_df = df.style.apply(highlight_specific_rows, axis=None)\
+                    .set_table_styles([
+                        {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                        {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                    ])\
+                    .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+#辞書形式に変換
+data_transposed = df.transpose().to_dict()
+
+
+
