@@ -550,12 +550,15 @@ data = {
 # Convert the data to a DataFrame
 df = pd.DataFrame(data)
 
+# Set the '所見' column as the index
+df.set_index('所見', inplace=True)
+
 # 特定の疾患を強調表示するスタイルを設定する関数
 def highlight_specific_rows(x):
     df_styler = pd.DataFrame('', index=x.index, columns=x.columns)
     specific_rows = ["大動脈解離", "消化管穿孔"]
     for row in specific_rows:
-        df_styler.loc[row, :] = 'background-color: red; color: white;'
+        df_styler.loc[:, row] = 'background-color: red; color: white;'
     return df_styler
 
 # スタイル設定されたデータフレーム
@@ -568,6 +571,5 @@ styled_df = df.style.apply(highlight_specific_rows, axis=None)\
 
 # 表示
 styled_df
-
 
 
