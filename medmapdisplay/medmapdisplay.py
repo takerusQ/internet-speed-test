@@ -1,3 +1,10 @@
+# フォントの設定を適用
+for key, cell in table.get_celld().items():
+    cell.set_fontproperties(FontProperties(fname=font_path))
+
+# 画像として保存
+plt.savefig("conditions_diseases_table.png", bbox_inches='tight')
+
 # 日本語フォントの設定（例としてMS Gothicを使用）
 plt.rcParams['font.family'] = 'MS Gothic'  # WindowsのMS Gothicフォントを使用
 
