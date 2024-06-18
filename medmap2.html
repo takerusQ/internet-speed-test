@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sortable Table with Download</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            cursor: pointer;
+        }
+        #downloadBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #downloadBtn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Sortable Table of Medical Conditions</h2>
+
+<table id="medicalTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">疾患名</th>
+            <th onclick="sortTable(1)">大動脈損傷</th>
+            <th onclick="sortTable(2)">縦隔血腫</th>
+            <th onclick="sortTable(3)">広範な肺挫傷</th>
+            <th onclick="sortTable(4)">血気胸</th>
+            <th onclick="sortTable(5)">心嚢血腫</th>
+            <th onclick="sortTable(6)">腹腔内出血</th>
+            <th onclick="sortTable(7)">骨盤骨折</th>
+            <th onclick="sortTable(8)">後腹膜出血</th>
+            <th onclick="sortTable(9)">（肝/脾/膵/腎）損傷</th>
+            <th onclick="sortTable(10)">腸間膜内出血</th>
+            <th onclick="sortTable(11)">緊急度</th>
+            <th onclick="sortTable(12)">一般性</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>頭部損傷</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>3</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>大動脈損傷</td>
+            <td>⚪︎</td>
+            <td>⚪︎</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>3</td>
+            <td>1</td>
+        </tr>
+        <tr>
+            <td>肺損傷</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>⚪︎</td>
+            <td>⚪︎</td>
+            <td>⚪︎</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>腹腔内出血</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>⚪︎</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>3</td>
+            <td>2</td>
+        </tr>
+        <tr>
+            <td>骨盤骨折</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>⚪︎</td>
+            <td>⚪︎</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+        <tr>
+            <td>臓器損傷</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>✖️</td>
+            <td>⚪︎</td>
+            <td>⚪︎</td>
+            <td>2</td>
+            <td>3</td>
+        </tr>
+    </tbody>
+</table>
+
+<button id="downloadBtn" onclick="downloadTableAsImage()">Download Table as Image</button>
+
+<script>
+function sortTable(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("medicalTable");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+function downloadTableAsImage() {
+    html2canvas(document.querySelector("#medicalTable")).then(canvas => {
+        var link = document.createElement('a');
+        link.download = 'medical_conditions_table.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    });
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+</body>
+</html>
