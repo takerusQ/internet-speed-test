@@ -321,4 +321,35 @@ disease_tags = pd.DataFrame(diseases).set_index("name")
 df_final = df_conditions_diseases.T.merge(disease_tags, left_index=True, right_index=True)
 
 # Function to sort DataFrame by urgency and commonality
-def sort_df(df, sort_by='urgency'):
+def sort_df(df):
+    return df.sort_values(by=['urgency', 'commonality'], ascending=[False, False])
+
+# Sorting the DataFrame
+sorted_df = sort_df(df_final)
+
+# Function to color-code the urgency levels
+def highlight_urgency(val):
+    color = 'white'
+    if val == 1:
+        color = 'black'
+    elif val == 2:
+        color = 'yellow'
+    elif val == 3:
+        color = 'red'
+    return f'background-color: {color}'
+
+# Applying styles
+styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+                          .applymap(highlight_urgency, subset=['commonality'])\
+                          .set_table_styles([
+                              {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                              {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                          ])\
+                          .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# Save as PNG
+def save_styled_dataframe_as_image(df, filename):
+    dfi.export(df, filename)
+
+# Save the styled DataFrame as an image
+save_styled_dataframe_as_image(styled_df, "disease_condition_table.png")
