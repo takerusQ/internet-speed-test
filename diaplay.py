@@ -106,6 +106,7 @@ print(sorted_df)
 
 
 
+
 import pandas as pd
 
 # Define the conditions and diseases data
@@ -215,4 +216,7 @@ styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
                               {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
                               {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
                           ])\
-                          .set_properties(**
+                          .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# Display the styled DataFrame
+styled_df
