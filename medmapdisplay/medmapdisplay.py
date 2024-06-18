@@ -122,3 +122,96 @@ df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込�
 ## Rename the index "液体貯留" to "液体貯留2"
 #df_conditions_diseases.rename(index={"液体貯留": "液体貯留2"}, inplace=True)
 
+
+diseases += [
+    {"name": "脳内出血", "urgency": 3, "commonality": 2},
+    {"name": "動脈硬化", "urgency": 2, "commonality": 3},
+    {"name": "腎結石", "urgency": 2, "commonality": 3},
+    {"name": "胆石", "urgency": 2, "commonality": 3},
+    {"name": "慢性膵炎", "urgency": 2, "commonality": 2},
+    {"name": "骨転移", "urgency": 3, "commonality": 2},
+    {"name": "骨髄炎", "urgency": 3, "commonality": 1}
+]
+
+
+
+
+# Filling the DataFrame based on each disease's CT findings with explanations
+
+# 脳内出血
+df_conditions_diseases.loc["液体貯留", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["Free air", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["石灰化", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "脳内出血"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "脳内出血"] = "〇:造影剤の漏れ"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "脳内出血"] = "△:急性期には高吸収域"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "脳内出血"] = "✖️"
+
+# 動脈硬化
+df_conditions_diseases.loc["液体貯留", "動脈硬化"] = "✖️"
+df_conditions_diseases.loc["Free air", "動脈硬化"] = "✖️"
+df_conditions_diseases.loc["石灰化", "動脈硬化"] = "〇:石灰化プラーク"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "動脈硬化"] = "〇:狭窄"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "動脈硬化"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "動脈硬化"] = "〇:血管壁の肥厚"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "動脈硬化"] = "△:血栓"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "動脈硬化"] = "✖️"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "動脈硬化"] = "✖️"
+
+# 腎結石
+df_conditions_diseases.loc["液体貯留", "腎結石"] = "✖️"
+df_conditions_diseases.loc["Free air", "腎結石"] = "✖️"
+df_conditions_diseases.loc["石灰化", "腎結石"] = "〇:結石"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "腎結石"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "腎結石"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "腎結石"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "腎結石"] = "✖️"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "腎結石"] = "✖️"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "腎結石"] = "✖️"
+
+# 胆石
+df_conditions_diseases.loc["液体貯留", "胆石"] = "✖️"
+df_conditions_diseases.loc["Free air", "胆石"] = "✖️"
+df_conditions_diseases.loc["石灰化", "胆石"] = "〇:結石"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "胆石"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "胆石"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "胆石"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "胆石"] = "✖️"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "胆石"] = "✖️"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "胆石"] = "✖️"
+
+# 慢性膵炎
+df_conditions_diseases.loc["液体貯留", "慢性膵炎"] = "△:膵液の貯留が見られることがある"
+df_conditions_diseases.loc["Free air", "慢性膵炎"] = "✖️"
+df_conditions_diseases.loc["石灰化", "慢性膵炎"] = "〇:石灰化"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "慢性膵炎"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "慢性膵炎"] = "〇:不均一な増加"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "慢性膵炎"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "慢性膵炎"] = "✖️"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "慢性膵炎"] = "✖️"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "慢性膵炎"] = "✖️"
+
+# 骨転移
+# 骨転移
+df_conditions_diseases.loc["液体貯留", "骨転移"] = "✖️"
+df_conditions_diseases.loc["Free air", "骨転移"] = "✖️"
+df_conditions_diseases.loc["石灰化", "骨転移"] = "△:骨形成性の転移が見られることがある"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "骨転移"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "骨転移"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "骨転移"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "骨転移"] = "✖️"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "骨転移"] = "△:骨融解性の転移が見られることがある"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "骨転移"] = "✖️"
+
+# 骨髄炎
+df_conditions_diseases.loc["液体貯留", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["Free air", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["石灰化", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）", "骨髄炎"] = "✖️"
+df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "骨髄炎"] = "△:炎症による血流変化が見られることがある"
+df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "骨髄炎"] = "〇:炎症による浮腫"
+df_conditions_diseases.loc["脂肪組織の濃度変化", "骨髄炎"] = "✖️"
