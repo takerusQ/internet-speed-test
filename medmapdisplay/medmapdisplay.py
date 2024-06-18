@@ -232,3 +232,14 @@ df_conditions_diseases.loc["脂肪組織の濃度変化", "腹腔内感染"] = "
 
 # 外傷
 df_conditions_diseases.loc["脂肪組織の濃度変化", "外傷"] = "〇:出血による脂肪組織の濃度変化"
+
+!pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org python-pptx
+と命令すると、以下のエラーが出る
+
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))': /simple/python-pptx/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))': /simple/python-pptx/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))': /simple/python-pptx/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))': /simple/python-pptx/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ProxyError('Cannot connect to proxy.', ConnectionResetError(10054, '既存の接続はリモート ホストに強制的に切断されました。', None, 10054, None))': /simple/python-pptx/
+ERROR: Could not find a version that satisfies the requirement python-pptx (from versions: none)
+ERROR: No matching distribution found for python-pptx
