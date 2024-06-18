@@ -1,3 +1,15 @@
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[8], line 18
+     16 # フォントの設定を適用
+     17 for key, cell in table.get_celld().items():
+---> 18     cell.set_fontproperties(FontProperties(fname=font_path))
+     20 # 画像として保存
+     21 plt.savefig("conditions_diseases_table.png", bbox_inches='tight')
+
+AttributeError: 'Cell' object has no attribute 'set_fontproperties'
+
+
 
 # 日本語フォントの設定（例としてMS Gothicを使用）
 plt.rcParams['font.family'] = 'MS Gothic'  # WindowsのMS Gothicフォントを使用
