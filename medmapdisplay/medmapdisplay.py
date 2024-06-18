@@ -1,3 +1,5 @@
+python -m pip install --upgrade pip
+
 import pandas as pd
 
 # Define the conditions and diseases data
