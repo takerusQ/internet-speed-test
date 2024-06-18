@@ -1,3 +1,18 @@
+# 日本語フォントの設定（例としてMS Gothicを使用）
+plt.rcParams['font.family'] = 'MS Gothic'  # WindowsのMS Gothicフォントを使用
+
+# プロットのスタイルを設定
+fig, ax = plt.subplots(figsize=(15, 10))  # 画像サイズを設定
+ax.axis('tight')
+ax.axis('off')
+table = ax.table(cellText=df_conditions_diseases.values, colLabels=df_conditions_diseases.columns, rowLabels=df_conditions_diseases.index, cellLoc = 'center', loc='center')
+
+# テーブルのレイアウトを自動調整
+table.auto_set_font_size(False)
+table.set_fontsize(10)
+table.scale(1.2, 1.2)  # サイズを調整
+
+
 C:\Users\root\AppData\Local\Programs\Python\Python312\Lib\site-packages\IPython\core\events.py:82: UserWarning: Glyph 12488 (\N{KATAKANA LETTER TO}) missing from font(s) DejaVu Sans.
   func(*args, **kwargs)
 C:\Users\root\AppData\Local\Programs\Python\Python312\Lib\site-packages\IPython\core\events.py:82: UserWarning: Glyph 12451 (\N{KATAKANA LETTER SMALL I}) missing from font(s) DejaVu Sans.
