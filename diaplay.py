@@ -58,3 +58,46 @@ Image 2 (CT findings table):
 	•	骨盤骨折・後腹膜出血: 骨盤骨折、後腹膜出血
 	•	実質臓器: （肝/脾/膵/腎）損傷、腸間膜内出血
 
+import pandas as pd
+
+# Define the conditions and diseases
+conditions = ["緊急減圧開頭術の必要性", "大動脈損傷", "縦隔血腫", "広範な肺挫傷", "血気胸", "心嚢血腫", "腹腔内出血", "骨盤骨折", "後腹膜出血", "（肝/脾/膵/腎）損傷", "腸間膜内出血"]
+
+diseases = [
+    {"name": "頭部損傷", "urgency": 3, "commonality": 2},
+    {"name": "大動脈損傷", "urgency": 3, "commonality": 1},
+    {"name": "肺損傷", "urgency": 2, "commonality": 3},
+    {"name": "腹腔内出血", "urgency": 3, "commonality": 2},
+    {"name": "骨盤骨折", "urgency": 2, "commonality": 3},
+    {"name": "臓器損傷", "urgency": 2, "commonality": 3},
+]
+
+# Create an empty DataFrame with conditions as index and diseases as columns
+df_conditions_diseases = pd.DataFrame(0, index=conditions, columns=[d['name'] for d in diseases])
+
+# Filling the DataFrame based on given conditions
+df_conditions_diseases.loc["緊急減圧開頭術の必要性", "頭部損傷"] = 1
+df_conditions_diseases.loc["大動脈損傷", "大動脈損傷"] = 1
+df_conditions_diseases.loc["縦隔血腫", "大動脈損傷"] = 1
+df_conditions_diseases.loc["広範な肺挫傷", "肺損傷"] = 1
+df_conditions_diseases.loc["血気胸", "肺損傷"] = 1
+df_conditions_diseases.loc["心嚢血腫", "肺損傷"] = 1
+df_conditions_diseases.loc["腹腔内出血", "腹腔内出血"] = 1
+df_conditions_diseases.loc["骨盤骨折", "骨盤骨折"] = 1
+df_conditions_diseases.loc["後腹膜出血", "骨盤骨折"] = 1
+df_conditions_diseases.loc["（肝/脾/膵/腎）損傷", "臓器損傷"] = 1
+df_conditions_diseases.loc["腸間膜内出血", "臓器損傷"] = 1
+
+# Adding urgency and commonality tags
+disease_tags = pd.DataFrame(diseases).set_index("name")
+
+# Merging the DataFrames
+df_final = df_conditions_diseases.T.merge(disease_tags, left_index=True, right_index=True)
+
+# Function to sort DataFrame by urgency and commonality
+def sort_df(df, sort_by='urgency'):
+    return df.sort_values(by=sort_by, ascending=False)
+
+# Display the sorted DataFrame
+sorted_df = sort_df(df_final)
+print(sorted_df)
