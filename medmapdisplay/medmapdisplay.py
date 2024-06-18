@@ -119,3 +119,6 @@ df_conditions_diseases.loc["液体貯留", "胆嚢炎"] = "〇:胆汁の貯留"
 df_conditions_diseases.loc["実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", "胆嚢炎"] = "〇:胆嚢壁の肥厚"
 
 
+## Rename the index "液体貯留" to "液体貯留2"
+#df_conditions_diseases.rename(index={"液体貯留": "液体貯留2"}, inplace=True)
+
