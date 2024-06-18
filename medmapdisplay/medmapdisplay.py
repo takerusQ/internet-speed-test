@@ -1,3 +1,25 @@
+# 日本語フォントの設定（例としてMS Gothicを使用）
+plt.rcParams['font.family'] = 'MS Gothic'  # WindowsのMS Gothicフォントを使用
+
+# プロットのスタイルを設定
+fig, ax = plt.subplots(figsize=(15, 10))  # 画像サイズを設定
+ax.axis('tight')
+ax.axis('off')
+table = ax.table(cellText=df_conditions_diseases.values, colLabels=df_conditions_diseases.columns, rowLabels=df_conditions_diseases.index, cellLoc='center', loc='center')
+
+# テーブルのレイアウトを自動調整
+table.auto_set_font_size(False)
+table.set_fontsize(10)
+table.scale(1.2, 1.2)  # サイズを調整
+
+# 画像として保存
+plt.savefig("conditions_diseases_table.png", bbox_inches='tight')
+
+# CSVとして保存（エンコーディングを指定）
+df_conditions_diseases.to_csv("conditions_diseases_table.csv", encoding='utf-8-sig')
+
+
+
 ---------------------------------------------------------------------------
 AttributeError                            Traceback (most recent call last)
 Cell In[8], line 18
