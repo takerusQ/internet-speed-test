@@ -220,3 +220,105 @@ styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
 
 # Display the styled DataFrame
 styled_df
+
+
+
+
+#######@#
+####@##@@
+
+import pandas as pd
+
+# Define the conditions and diseases data
+conditions = ["液体停滞", "Free air", "石灰化", "腸閉塞", "消化管内滞留", "脾腫", "腸管の状態", "血管走行異常", "血管の状態", "低吸収域", "液体貯留"]
+diseases = [
+    {"name": "大動脈解離", "urgency": 3, "commonality": 1},
+    {"name": "脳梗塞", "urgency": 2, "commonality": 2},
+    {"name": "肝膿瘍", "urgency": 3, "commonality": 2},
+    {"name": "腸管虚血", "urgency": 3, "commonality": 1},
+    {"name": "脾梗塞", "urgency": 2, "commonality": 1},
+    {"name": "腎梗塞", "urgency": 2, "commonality": 1},
+    {"name": "膵臓腫瘍", "urgency": 1, "commonality": 3},
+    {"name": "脳膿瘍", "urgency": 3, "commonality": 1},
+    {"name": "嚢胞", "urgency": 1, "commonality": 3},
+    {"name": "脂肪腫", "urgency": 1, "commonality": 3},
+    {"name": "肝嚢胞", "urgency": 1, "commonality": 3},
+    {"name": "消化管穿孔", "urgency": 3, "commonality": 2},
+    {"name": "腹腔内感染", "urgency": 3, "commonality": 2},
+    {"name": "外傷", "urgency": 3, "commonality": 2},
+    {"name": "術後状態", "urgency": 2, "commonality": 2},
+    {"name": "腹腔鏡手術後", "urgency": 2, "commonality": 2},
+    {"name": "膵炎", "urgency": 3, "commonality": 2},
+    {"name": "特発性遊離ガス", "urgency": 1, "commonality": 1},
+    {"name": "出血", "urgency": 3, "commonality": 2},
+    {"name": "急性膵炎", "urgency": 3, "commonality": 2},
+    {"name": "腸閉塞", "urgency": 3, "commonality": 2},
+    {"name": "腹膜炎", "urgency": 3, "commonality": 2},
+    {"name": "心タンポナーデ", "urgency": 3, "commonality": 1},
+    {"name": "腎膿瘍", "urgency": 3, "commonality": 2},
+    {"name": "膀胱破裂", "urgency": 3, "commonality": 1},
+    {"name": "胸水", "urgency": 2, "commonality": 2},
+    {"name": "腹水", "urgency": 2, "commonality": 2},
+    {"name": "胆嚢炎", "urgency": 3, "commonality": 2}
+]
+
+# Create an empty DataFrame with conditions as index and diseases as columns
+df_conditions_diseases = pd.DataFrame('✖️', index=conditions, columns=[d['name'] for d in diseases])
+
+# Filling the DataFrame based on given conditions with explanations
+df_conditions_diseases.loc["液体停滞", "大動脈解離"] = "△: 胸水など"
+df_conditions_diseases.loc["石灰化", "大動脈解離"] = "〇"
+df_conditions_diseases.loc["血管走行異常", "大動脈解離"] = "△: 血管の異常な走行"
+df_conditions_diseases.loc["血管の状態", "大動脈解離"] = "△: 血管の状態の変化"
+df_conditions_diseases.loc["低吸収域", "大動脈解離"] = "△: 低吸収域の変化"
+df_conditions_diseases.loc["液体貯留", "大動脈解離"] = "△: 胸水など"
+
+# Further filling for other diseases based on general medical knowledge
+df_conditions_diseases.loc["液体停滞", "肝膿瘍"] = "〇"
+df_conditions_diseases.loc["液体停滞", "嚢胞"] = "〇"
+df_conditions_diseases.loc["液体停滞", "肝嚢胞"] = "〇"
+df_conditions_diseases.loc["液体貯留", "肝膿瘍"] = "〇"
+df_conditions_diseases.loc["液体貯留", "嚢胞"] = "〇"
+df_conditions_diseases.loc["液体貯留", "肝嚢胞"] = "〇"
+df_conditions_diseases.loc["液体貯留", "消化管穿孔"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腹腔内感染"] = "〇"
+df_conditions_diseases.loc["液体貯留", "外傷"] = "〇"
+df_conditions_diseases.loc["液体貯留", "術後状態"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腹腔鏡手術後"] = "〇"
+df_conditions_diseases.loc["液体貯留", "膵炎"] = "〇"
+df_conditions_diseases.loc["液体貯留", "急性膵炎"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腸閉塞"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腹膜炎"] = "〇"
+df_conditions_diseases.loc["液体貯留", "心タンポナーデ"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腎膿瘍"] = "〇"
+df_conditions_diseases.loc["液体貯留", "膀胱破裂"] = "〇"
+df_conditions_diseases.loc["液体貯留", "胸水"] = "〇"
+df_conditions_diseases.loc["液体貯留", "腹水"] = "〇"
+df_conditions_diseases.loc["液体貯留", "胆嚢炎"] = "〇"
+df_conditions_diseases.loc["Free air", "消化管穿孔"] = "〇"
+df_conditions_diseases.loc["Free air", "腹腔内感染"] = "〇"
+df_conditions_diseases.loc["Free air", "外傷"] = "〇"
+df_conditions_diseases.loc["Free air", "術後状態"] = "〇"
+df_conditions_diseases.loc["Free air", "腹腔鏡手術後"] = "〇"
+df_conditions_diseases.loc["Free air", "膵炎"] = "〇"
+df_conditions_diseases.loc["Free air", "特発性遊離ガス"] = "〇"
+df_conditions_diseases.loc["石灰化", "大動脈解離"] = "〇"
+df_conditions_diseases.loc["腸閉塞", "腸閉塞"] = "〇"
+df_conditions_diseases.loc["低吸収域", "脳梗塞"] = "〇"
+df_conditions_diseases.loc["低吸収域", "肝膿瘍"] = "〇"
+df_conditions_diseases.loc["低吸収域", "腸管虚血"] = "〇"
+df_conditions_diseases.loc["低吸収域", "脾梗塞"] = "〇"
+df_conditions_diseases.loc["低吸収域", "腎梗塞"] = "〇"
+df_conditions_diseases.loc["低吸収域", "膵臓腫瘍"] = "〇"
+df_conditions_diseases.loc["低吸収域", "脳膿瘍"] = "〇"
+df_conditions_diseases.loc["低吸収域", "出血"] = "〇"
+df_conditions_diseases.loc["低吸収域", "急性膵炎"] = "〇"
+
+# Adding urgency and commonality tags
+disease_tags = pd.DataFrame(diseases).set_index("name")
+
+# Merging the DataFrames
+df_final = df_conditions_diseases.T.merge(disease_tags, left_index=True, right_index=True)
+
+# Function to sort DataFrame by urgency and commonality
+def sort_df(df, sort_by='urgency'):
