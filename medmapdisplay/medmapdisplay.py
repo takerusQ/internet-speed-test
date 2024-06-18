@@ -215,3 +215,20 @@ df_conditions_diseases.loc["血管壁の異常（瘤・二重管腔（石灰化�
 df_conditions_diseases.loc["血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", "骨髄炎"] = "△:炎症による血流変化が見られることがある"
 df_conditions_diseases.loc["低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）", "骨髄炎"] = "〇:炎症による浮腫"
 df_conditions_diseases.loc["脂肪組織の濃度変化", "骨髄炎"] = "✖️"
+
+# Filling the DataFrame based on each disease's CT findings with explanations
+
+# 急性膵炎
+df_conditions_diseases.loc["脂肪組織の濃度変化", "急性膵炎"] = "〇:膵周囲の脂肪ストランディング"
+
+# 慢性膵炎
+df_conditions_diseases.loc["脂肪組織の濃度変化", "慢性膵炎"] = "〇:膵周囲の脂肪ストランディング"
+
+# 急性胆嚢炎
+df_conditions_diseases.loc["脂肪組織の濃度変化", "胆嚢炎"] = "〇:胆嚢周囲の脂肪ストランディング"
+
+# 腹腔内感染
+df_conditions_diseases.loc["脂肪組織の濃度変化", "腹腔内感染"] = "〇:脂肪組織の濃度変化"
+
+# 外傷
+df_conditions_diseases.loc["脂肪組織の濃度変化", "外傷"] = "〇:出血による脂肪組織の濃度変化"
