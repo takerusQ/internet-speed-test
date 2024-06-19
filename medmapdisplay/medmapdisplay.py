@@ -707,3 +707,48 @@ File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\ind
    6252     raise KeyError(f"{not_found} not in index")
 
 KeyError: "None of [Index(['urgency'], dtype='object')] are in the [columns]"
+
+
+import pandas as pd
+
+# sorted_dfを部分的に抽出
+partlysorted_df = sorted_df.loc[:, ["脂肪組織の濃度変化"]]
+
+# urgencyとcommonalityの適用範囲の問題を解決
+def highlight_urgency(val):
+    color = 'white'
+    if val == 1:
+        color = 'gray'
+    elif val == 2:
+        color = 'yellow'
+    elif val == 3:
+        color = 'red'
+    return f'background-color: {color}'
+
+# 行名と列名に対してハイライト処理とフォント処理を適用する関数
+def highlight_headers(val):
+    highlight_texts = [
+        "管腔臓器", "実質臓器", "血管壁", "血流", "脂肪組織"
+    ]
+    if any(text in val for text in highlight_texts):
+        return 'font-size: 12pt; background-color: lightgreen'
+    return ''
+
+# urgencyとcommonality列がpartlysorted_dfに存在しない場合を考慮
+if 'urgency' in partlysorted_df.columns and 'commonality' in partlysorted_df.columns:
+    styled_df = partlysorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+                                     .applymap(highlight_urgency, subset=['commonality'])
+else:
+    styled_df = partlysorted_df.style
+
+# 行名と列名に対してハイライト処理とフォント処理を適用
+styled_df = styled_df.applymap(highlight_headers, subset=pd.IndexSlice[:, partlysorted_df.columns])\
+                     .applymap(highlight_headers, subset=pd.IndexSlice[partlysorted_df.index, :])\
+                     .set_table_styles([
+                         {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                         {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                     ])\
+                     .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# 表示
+styled_df
