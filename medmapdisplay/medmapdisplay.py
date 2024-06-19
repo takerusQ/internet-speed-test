@@ -484,3 +484,52 @@ styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
 
 # 表示
 styled_df
+
+import pandas as pd
+
+# サンプルのデータフレーム（sorted_df）を作成
+data = {
+    "条件1": ["△:心嚢水が見られることがある", "✖️", "〇:内膜の石灰化"],
+    "条件2": ["✖️", "✖️", "✖️"],
+    "条件3": ["〇:膿の貯留", "✖️", "✖️"],
+    "urgency": [3, 1, 2],
+    "commonality": [2, 3, 1]
+}
+
+index = [
+    "管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", 
+    "実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", 
+    "血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）"
+]
+
+sorted_df = pd.DataFrame(data, index=index)
+
+def highlight_urgency(val):
+    color = 'white'
+    if val == 1:
+        color = 'gray'
+    elif val == 2:
+        color = 'yellow'
+    elif val == 3:
+        color = 'red'
+    return f'background-color: {color}'
+
+def highlight_headers(s):
+    highlight_texts = [
+        "管腔臓器", "実質臓器", "血管壁", "血流", "脂肪組織"
+    ]
+    return ['font-size: 12pt; background-color: lightgreen' if any(text in col for text in highlight_texts) else '' for col in s]
+
+# Applying styles
+styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+                          .applymap(highlight_urgency, subset=['commonality'])\
+                          .apply(highlight_headers, axis=1, subset=pd.IndexSlice[:, :])\
+                          .apply(highlight_headers, axis=0, subset=pd.IndexSlice[:, :])\
+                          .set_table_styles([
+                              {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                              {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                          ])\
+                          .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# 表示
+styled_df
