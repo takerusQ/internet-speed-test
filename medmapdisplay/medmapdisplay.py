@@ -533,3 +533,177 @@ styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
 
 # 表示
 styled_df
+
+
+
+
+
+
+
+
+
+
+
+
+partlysorted_df=sorted_df.loc[:, ["脂肪組織の濃度変化"]]
+
+partlystyled_df = partlysorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+                          .applymap(highlight_urgency, subset=['commonality'])\
+                          .applymap(highlight_index, subset=pd.IndexSlice[:, :])\
+                          .set_table_styles([
+                              {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                              {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                          ])\
+                          .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# 表示
+partlystyled_df
+
+C:\Users\root\AppData\Local\Temp\ipykernel_15848\1431276768.py:3: FutureWarning: Styler.applymap has been deprecated. Use Styler.map instead.
+  partlystyled_df = partlysorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+C:\Users\root\AppData\Local\Temp\ipykernel_15848\1431276768.py:4: FutureWarning: Styler.applymap has been deprecated. Use Styler.map instead.
+  .applymap(highlight_urgency, subset=['commonality'])\
+C:\Users\root\AppData\Local\Temp\ipykernel_15848\1431276768.py:5: FutureWarning: Styler.applymap has been deprecated. Use Styler.map instead.
+  .applymap(highlight_index, subset=pd.IndexSlice[:, :])\
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\IPython\core\formatters.py:347, in BaseFormatter.__call__(self, obj)
+    345     method = get_real_method(obj, self.print_method)
+    346     if method is not None:
+--> 347         return method()
+    348     return None
+    349 else:
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style.py:405, in Styler._repr_html_(self)
+    400 """
+    401 Hooks into Jupyter notebook rich display system, which calls _repr_html_ by
+    402 default if an object is returned at the end of a cell.
+    403 """
+    404 if get_option("styler.render.repr") == "html":
+--> 405     return self.to_html()
+    406 return None
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style.py:1345, in Styler.to_html(self, buf, table_uuid, table_attributes, sparse_index, sparse_columns, bold_headers, caption, max_rows, max_columns, encoding, doctype_html, exclude_styles, **kwargs)
+   1342     obj.set_caption(caption)
+   1344 # Build HTML string..
+-> 1345 html = obj._render_html(
+   1346     sparse_index=sparse_index,
+   1347     sparse_columns=sparse_columns,
+   1348     max_rows=max_rows,
+   1349     max_cols=max_columns,
+   1350     exclude_styles=exclude_styles,
+   1351     encoding=encoding or get_option("styler.render.encoding"),
+   1352     doctype_html=doctype_html,
+   1353     **kwargs,
+   1354 )
+   1356 return save_to_buffer(
+   1357     html, buf=buf, encoding=(encoding if buf is not None else None)
+   1358 )
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style_render.py:204, in StylerRenderer._render_html(self, sparse_index, sparse_columns, max_rows, max_cols, **kwargs)
+    192 def _render_html(
+    193     self,
+    194     sparse_index: bool,
+   (...)
+    198     **kwargs,
+    199 ) -> str:
+    200     """
+    201     Renders the ``Styler`` including all applied styles to HTML.
+    202     Generates a dict with necessary kwargs passed to jinja2 template.
+    203     """
+--> 204     d = self._render(sparse_index, sparse_columns, max_rows, max_cols, "&nbsp;")
+    205     d.update(kwargs)
+    206     return self.template_html.render(
+    207         **d,
+    208         html_table_tpl=self.template_html_table,
+    209         html_style_tpl=self.template_html_style,
+    210     )
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style_render.py:161, in StylerRenderer._render(self, sparse_index, sparse_columns, max_rows, max_cols, blank)
+    147 def _render(
+    148     self,
+    149     sparse_index: bool,
+   (...)
+    153     blank: str = "",
+    154 ):
+    155     """
+    156     Computes and applies styles and then generates the general render dicts.
+    157 
+    158     Also extends the `ctx` and `ctx_index` attributes with those of concatenated
+    159     stylers for use within `_translate_latex`
+    160     """
+--> 161     self._compute()
+    162     dxs = []
+    163     ctx_len = len(self.index)
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style_render.py:256, in StylerRenderer._compute(self)
+    254 r = self
+    255 for func, args, kwargs in self._todo:
+--> 256     r = func(self)(*args, **kwargs)
+    257 return r
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\formats\style.py:2027, in Styler._map(self, func, subset, **kwargs)
+   2025     subset = IndexSlice[:]
+   2026 subset = non_reducing_slice(subset)
+-> 2027 result = self.data.loc[subset].map(func)
+   2028 self._update_ctx(result)
+   2029 return self
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1184, in _LocationIndexer.__getitem__(self, key)
+   1182     if self._is_scalar_access(key):
+   1183         return self.obj._get_value(*key, takeable=self._takeable)
+-> 1184     return self._getitem_tuple(key)
+   1185 else:
+   1186     # we by definition only have the 0th axis
+   1187     axis = self.axis or 0
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1377, in _LocIndexer._getitem_tuple(self, tup)
+   1374 if self._multi_take_opportunity(tup):
+   1375     return self._multi_take(tup)
+-> 1377 return self._getitem_tuple_same_dim(tup)
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1020, in _LocationIndexer._getitem_tuple_same_dim(self, tup)
+   1017 if com.is_null_slice(key):
+   1018     continue
+-> 1020 retval = getattr(retval, self.name)._getitem_axis(key, axis=i)
+   1021 # We should never have retval.ndim < self.ndim, as that should
+   1022 #  be handled by the _getitem_lowerdim call above.
+   1023 assert retval.ndim == self.ndim
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1420, in _LocIndexer._getitem_axis(self, key, axis)
+   1417     if hasattr(key, "ndim") and key.ndim > 1:
+   1418         raise ValueError("Cannot index with multidimensional key")
+-> 1420     return self._getitem_iterable(key, axis=axis)
+   1422 # nested tuple slicing
+   1423 if is_nested_tuple(key, labels):
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1360, in _LocIndexer._getitem_iterable(self, key, axis)
+   1357 self._validate_key(key, axis)
+   1359 # A collection of keys
+-> 1360 keyarr, indexer = self._get_listlike_indexer(key, axis)
+   1361 return self.obj._reindex_with_indexers(
+   1362     {axis: [keyarr, indexer]}, copy=True, allow_dups=True
+   1363 )
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexing.py:1558, in _LocIndexer._get_listlike_indexer(self, key, axis)
+   1555 ax = self.obj._get_axis(axis)
+   1556 axis_name = self.obj._get_axis_name(axis)
+-> 1558 keyarr, indexer = ax._get_indexer_strict(key, axis_name)
+   1560 return keyarr, indexer
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py:6200, in Index._get_indexer_strict(self, key, axis_name)
+   6197 else:
+   6198     keyarr, indexer, new_indexer = self._reindex_non_unique(keyarr)
+-> 6200 self._raise_if_missing(keyarr, indexer, axis_name)
+   6202 keyarr = self.take(indexer)
+   6203 if isinstance(key, Index):
+   6204     # GH 42790 - Preserve name from an Index
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py:6249, in Index._raise_if_missing(self, key, indexer, axis_name)
+   6247 if nmissing:
+   6248     if nmissing == len(indexer):
+-> 6249         raise KeyError(f"None of [{key}] are in the [{axis_name}]")
+   6251     not_found = list(ensure_index(key)[missing_mask.nonzero()[0]].unique())
+   6252     raise KeyError(f"{not_found} not in index")
+
+KeyError: "None of [Index(['urgency'], dtype='object')] are in the [columns]"
