@@ -401,5 +401,37 @@ Cell In[16], line 5, in <genexpr>(.0)
 TypeError: argument of type 'int' is not iterable
 <pandas.io.formats.style.Styler at 0x211309d32f0>
 styled_df
+
+
+def highlight_conditions(val):
+    highlight_texts = [
+        "管腔臓器", "実質臓器", "血管壁", "血流", "脂肪組織"
+    ]
+    if isinstance(val, str) and any(text in val for text in highlight_texts):
+        return 'font-size: 12pt; background-color: lightgreen'
+    return ''
+
+def highlight_urgency(val):
+    color = 'white'
+    if val == 1:
+        color = 'gray'
+    elif val == 2:
+        color = 'yellow'
+    elif val == 3:
+        color = 'red'
+    return f'background-color: {color}'
+
+# Applying styles
+styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
+                          .applymap(highlight_urgency, subset=['commonality'])\
+                          .applymap(highlight_conditions)\
+                          .set_table_styles([
+                              {'selector': 'th', 'props': [('font-size', '12pt'), ('font-weight', 'bold'), ('text-align', 'center')]},
+                              {'selector': 'td', 'props': [('font-size', '10pt'), ('text-align', 'center')]}
+                          ])\
+                          .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
+
+# 表示
+styled_df
     
     
