@@ -306,3 +306,88 @@ table.scale(1.2, 1.2)  # サイズを調整
 
 # CSVとして保存（エンコーディングを指定）
 #df_conditions_diseases.to_csv("conditions_diseases_table.csv", encoding='utf-8-sig')
+
+
+
+
+
+
+###@####@@@@@@#@#@@
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+
+# サンプルのデータフレーム（df_conditions_diseases）を作成
+data = {
+    "大動脈解離": ["△:心嚢水が見られることがある", "✖️", "〇:内膜の石灰化", "✖️", "✖️", "〇:二重管腔", "〇:造影剤の漏れ", "△:血腫が見られることがある", "✖️"],
+    "脳梗塞": ["✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "〇:造影欠損", "〇:脳の低吸収域", "✖️"],
+    "肝膿瘍": ["〇:膿の貯留", "✖️", "✖️", "✖️", "〇:不均一な増加", "✖️", "✖️", "✖️", "✖️"],
+    "腸管虚血": ["✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "〇:腸管の低吸収域", "✖️"],
+    "脾梗塞": ["✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "〇:脾臓の低吸収域", "✖️"],
+    "膵臓腫瘍": ["✖️", "✖️", "✖️", "✖️", "〇:不均一な増加", "✖️", "✖️", "✖️", "✖️"],
+    "急性膵炎": ["〇:膵液の貯留", "✖️", "✖️", "✖️", "〇:膵臓の腫大", "✖️", "✖️", "✖️", "〇:膵周囲の脂肪ストランディング"],
+    "慢性膵炎": ["△:膵液の貯留が見られることがある", "✖️", "〇:石灰化", "✖️", "〇:不均一な増加", "✖️", "✖️", "✖️", "〇:膵周囲の脂肪ストランディング"],
+    "胆嚢炎": ["〇:胆汁の貯留", "✖️", "✖️", "✖️", "〇:胆嚢壁の肥厚", "✖️", "✖️", "✖️", "〇:胆嚢周囲の脂肪ストランディング"],
+    "腹腔内感染": ["〇:膿の貯留", "✖️", "✖️", "✖️", "〇:不均一な増加", "✖️", "✖️", "✖️", "〇:脂肪組織の濃度変化"],
+    "外傷": ["〇:出血", "✖️", "✖️", "✖️", "✖️", "✖️", "〇:造影剤の漏れ", "✖️", "〇:出血による脂肪組織の濃度変化"],
+    "胸水": ["〇:胸水の貯留", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️"],
+    "腹水": ["〇:腹水の貯留", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️", "✖️"]
+}
+conditions = [
+    "液体貯留", "Free air", "石灰化", 
+    "管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）", 
+    "実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）", 
+    "血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）",
+    "血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）", 
+    "低吸収域（腫瘤・血腫・梗塞・脂肪変性・炎症による浮腫）",
+    "脂肪組織の濃度変化"
+]
+
+df_conditions_diseases = pd.DataFrame(data, index=conditions)
+
+# 日本語フォントの設定（例としてMS Gothicを使用）
+plt.rcParams['font.family'] = 'MS Gothic'  # WindowsのMS Gothicフォントを使用
+
+# 特定の行に対してフォントサイズと背景色を設定する関数
+def highlight_conditions(cell, text):
+    if text in cell.get_text().get_text():
+        cell.set_fontsize(12)
+        cell.set_facecolor('#d1e7dd')  # 緑色のハイライト
+    return cell
+
+# プロットのスタイルを設定
+fig, ax = plt.subplots(figsize=(15, 10))  # 画像サイズを設定
+ax.axis('tight')
+ax.axis('off')
+
+# テーブルを作成
+table = ax.table(
+    cellText=df_conditions_diseases.values, 
+    colLabels=df_conditions_diseases.columns, 
+    rowLabels=df_conditions_diseases.index, 
+    cellLoc='center', 
+    loc='center'
+)
+
+# 特定の行に対してスタイルを適用
+highlight_texts = [
+    "管腔臓器の異常（拡張・狭窄・閉塞・壁肥厚・壁潰瘍・管内異物）",
+    "実質臓器の異常（腫大・造影剤取り込みの均一/不均一な増加・辺縁の不明瞭化）",
+    "血管壁の異常（瘤・二重管腔（石灰化の遊離）、肥厚＋造影強化）",
+    "血流（造影）の異常（血管外漏洩・血栓（造影欠損）・奇形）",
+    "脂肪組織の濃度変化"
+]
+
+for key, cell in table.get_celld().items():
+    if key[0] == 0:  # ヘッダー行
+        cell.set_fontsize(10)
+    elif key[1] == -1:  # インデックス列
+        cell = highlight_conditions(cell, df_conditions_diseases.index[key[0] - 1])
+    elif key[0] > 0 and key[1] > 0:  # データセル
+        cell.set_fontsize(10)
+
+# 画像として保存
+plt.savefig("conditions_diseases_table.png", bbox_inches='tight')
+
+# CSVとして保存（エンコーディングを指定）
+df_conditions_diseases.to_csv("conditions_diseases_table.csv", encoding='utf-8-sig')
