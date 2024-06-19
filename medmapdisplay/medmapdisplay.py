@@ -362,6 +362,44 @@ styled_df = sorted_df.style.applymap(highlight_urgency, subset=['urgency'])\
                           .set_properties(**{'max-width': '150px', 'font-size': '10pt'})
 
 # 表示
+
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\base.py:921, in IndexOpsMixin._map_values(self, mapper, na_action, convert)
+    918 if isinstance(arr, ExtensionArray):
+    919     return arr.map(mapper, na_action=na_action)
+--> 921 return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)
+
+File ~\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\algorithms.py:1743, in map_array(arr, mapper, na_action, convert)
+   1741 values = arr.astype(object, copy=False)
+   1742 if na_action is None:
+-> 1743     return lib.map_infer(values, mapper, convert=convert)
+   1744 else:
+   1745     return lib.map_infer_mask(
+   1746         values, mapper, mask=isna(values).view(np.uint8), convert=convert
+   1747     )
+
+File lib.pyx:2972, in pandas._libs.lib.map_infer()
+
+Cell In[16], line 5, in highlight_conditions(val)
+      1 def highlight_conditions(val):
+      2     highlight_texts = [
+      3         "管腔臓器", "実質臓器", "血管壁", "血流", "脂肪組織"
+      4     ]
+----> 5     if any(text in val for text in highlight_texts):
+      6         return 'font-size: 12pt; background-color: lightgreen'
+      7     return ''
+
+Cell In[16], line 5, in <genexpr>(.0)
+      1 def highlight_conditions(val):
+      2     highlight_texts = [
+      3         "管腔臓器", "実質臓器", "血管壁", "血流", "脂肪組織"
+      4     ]
+----> 5     if any(text in val for text in highlight_texts):
+      6         return 'font-size: 12pt; background-color: lightgreen'
+      7     return ''
+
+TypeError: argument of type 'int' is not iterable
+<pandas.io.formats.style.Styler at 0x211309d32f0>
 styled_df
     
     
