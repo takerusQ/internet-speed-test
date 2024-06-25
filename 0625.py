@@ -633,7 +633,107 @@ else:
 
 
 
+以下は、Jupyter Lab上で画像スタックを表示し、興味のあるスライスに任意の大きさの丸いROIを画像上のカーソルクリックによる中心座標の指定と半径の入力で作成し、そのROIのCT値の平均と分散を計算するプログラムです。
 
+### 必要なライブラリのインストール
+まず、必要なライブラリをインストールします。
+```bash
+pip install matplotlib numpy SimpleITK ipywidgets
+```
+
+### コード
+以下のコードをJupyter Notebookセルにコピーして実行します。
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+import SimpleITK as sitk
+from ipywidgets import interact, IntSlider
+import ipywidgets as widgets
+
+# DICOMシリーズの読み込み関数
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+# 画像スタックを読み込み
+dicom_dir = 'path_to_your_dicom_directory'  # ここを適切なパスに置き換えてください
+ct_image = load_dicom_series(dicom_dir)
+ct_array = sitk.GetArrayFromImage(ct_image)  # Z, Y, X の順
+
+# グローバル変数
+global selected_slice, roi_center, roi_radius
+selected_slice = None
+roi_center = None
+roi_radius = None
+
+# 画像スタックの表示
+def show_slice(slice_index):
+    global selected_slice
+    selected_slice = slice_index
+    plt.imshow(ct_array[slice_index, :, :], cmap='gray')
+    plt.title(f'Slice {slice_index}')
+    plt.show()
+
+# スライス選択のためのスライダー
+slice_slider = IntSlider(min=0, max=ct_array.shape[0]-1, step=1, description='Slice:')
+interact(show_slice, slice_index=slice_slider)
+
+# 画像上のクリックイベントの処理
+def onclick(event):
+    global roi_center
+    if event.inaxes:
+        x, y = int(event.xdata), int(event.ydata)
+        roi_center = (x, y)
+        print(f'ROI center selected at: {roi_center}')
+        calculate_roi_stats()
+
+# ROIのCT値の平均と分散を計算
+def calculate_roi_stats():
+    global roi_center, roi_radius, selected_slice
+    if roi_center is None or roi_radius is None or selected_slice is None:
+        return
+
+    x, y = roi_center
+    radius = roi_radius
+
+    mask = np.zeros_like(ct_array[selected_slice, :, :], dtype=np.uint8)
+    cv2.circle(mask, (x, y), radius, 1, -1)
+    
+    roi_values = ct_array[selected_slice, mask > 0]
+    mean_val = np.mean(roi_values)
+    std_val = np.std(roi_values)
+
+    print(f'Mean CT value: {mean_val}')
+    print(f'Standard Deviation: {std_val}')
+
+# 半径の入力ウィジェット
+radius_slider = IntSlider(min=1, max=100, step=1, description='Radius:')
+def set_radius(radius):
+    global roi_radius
+    roi_radius = radius
+    print(f'ROI radius set to: {roi_radius}')
+    calculate_roi_stats()
+    
+interact(set_radius, radius=radius_slider)
+
+# 画像上でのクリックを有効に
+fig, ax = plt.subplots()
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+show_slice(0)
+```
+
+### 説明
+1. **DICOMシリーズの読み込み**: `SimpleITK`を使用してDICOMシリーズを読み込みます。
+2. **画像スタックの表示**: `matplotlib`を使用して画像スタックの各スライスを表示します。スライダーでスライスを選択できます。
+3. **クリックイベントの処理**: 画像上の任意の位置をクリックしてROIの中心座標を指定します。
+4. **ROIの半径設定**: スライダーでROIの半径を設定します。
+5. **CT値の計算**: 指定されたROI内のCT値の平均と分散を計算して表示します。
+
+このコードをJupyter Lab上で実行すると、画像スタックの任意のスライスに対してROIを指定し、そのROI内のCT値の統計情報を取得できます。
 
 
 
