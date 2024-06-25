@@ -20,7 +20,7 @@ dicomfilepaths = sorted(os.listdir(example_person_dicom_dir_path))
 # 正規化関数
 def normalize_ct_image(image, window_width, window_level):
     min_value = window_level - (window_width / 2)
-    max_value = window_level + (window_width / 2)
+    max_value = window_width + (window_width / 2)
     normalized_image = (image - min_value) / (max_value - min_value)
     normalized_image[normalized_image < 0] = 0
     normalized_image[normalized_image > 1] = 1
@@ -102,6 +102,9 @@ optimizer = optim.Adam(list(encoder.parameters()) + list(decoder.parameters()), 
 # 損失関数
 criterion = nn.MSELoss()
 
+# 学習の損失を記録するリスト
+train_losses = []
+
 # 学習ループ
 for epoch in range(EPOCHS):
     total_loss = 0
@@ -114,14 +117,29 @@ for epoch in range(EPOCHS):
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
-    print(f'Epoch: {epoch+1}, Loss: {total_loss/len(dataloader)}')
+    avg_loss = total_loss / len(dataloader)
+    train_losses.append(avg_loss)
+    print(f'Epoch: {epoch+1}, Loss: {avg_loss}')
 
 # 画像の復元
 z_points = encoder(train_images)
 reconst_images = decoder(z_points)
 
+# 損失のプロット関数
+def plot_loss_curve(train_losses, save_path="results"):
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_losses, label='Training Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.title('Training Loss Over Epochs')
+    plt.savefig(os.path.join(save_path, "loss_curve.png"))
+    plt.show()
+
 # 画像のプロット関数
-def plot_images(original, decoded, n=5):
+def plot_images(original, decoded, n=5, save_path="results"):
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     plt.figure(figsize=(15, 10))
     for i in range(n):
         # オリジナル画像
@@ -142,7 +160,13 @@ def plot_images(original, decoded, n=5):
         plt.imshow(difference.permute(1, 2, 0).squeeze(), cmap="bwr", vmin=-1, vmax=1)
         plt.title("Difference")
         plt.axis("off")
+
+    # 画像を保存
+    plt.savefig(os.path.join(save_path, "reconstructed_images.png"))
     plt.show()
 
-# トレーニングデータから最初の5つの画像を表示
+# 損失曲線をプロットおよび保存
+plot_loss_curve(train_losses)
+
+# トレーニングデータから最初の5つの画像を表示および保存
 plot_images(train_images, reconst_images.detach(), n=5)
