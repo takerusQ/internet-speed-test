@@ -133,7 +133,7 @@ def plot_loss_curve(train_losses, save_path="results"):
     plt.ylabel('Loss')
     plt.legend()
     plt.title('Training Loss Over Epochs')
-    plt.savefig(os.path.join(save_path, "loss_curve.png"))
+    plt.savefig(os.path.join(save_path, r"C:\Users\kota\Desktop\suyama\loss_curve.png"))
     plt.show()
 
 # 画像のプロット関数
@@ -162,7 +162,7 @@ def plot_images(original, decoded, n=5, save_path="results"):
         plt.axis("off")
 
     # 画像を保存
-    plt.savefig(os.path.join(save_path, "reconstructed_images.png"))
+    plt.savefig(os.path.join(save_path, r"C:\Users\kota\Desktop\suyama\reconstructed_images.png"))
     plt.show()
 
 # 損失曲線をプロットおよび保存
