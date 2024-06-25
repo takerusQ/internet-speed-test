@@ -235,3 +235,77 @@ logger.info(f'Validation Loss after training: {val_loss}, IoU: {iou_score}')
 IoU（Intersection over Union）の評価: Dice Lossだけでなく、IoUも評価指標として追加。
 データの読み込みエラーハンドリング: データ読み込み時のエラー処理を追加。
 以下に、これらの改善点を含む完全なコードを示します：
+
+
+左心室のセグメンテーションを行うためには、適切にラベル付けされたデータセットが必要です。以下に、DICOMデータからCTスキャン画像と対応する左心室のマスクを手動で準備する手順を示します。
+
+手順概要
+DICOMデータの読み込みと変換
+左心室の手動セグメンテーション
+マスクの保存とデータセットの構築
+手順詳細
+1. DICOMデータの読み込みと変換
+まず、DICOMデータを読み込み、画像フォーマットに変換します。PythonのpydicomとSimpleITKライブラリを使用すると便利です。
+
+python
+コードをコピーする
+import pydicom
+import SimpleITK as sitk
+import numpy as np
+import os
+
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+dicom_dir = 'path_to_your_dicom_directory'
+ct_image = load_dicom_series(dicom_dir)
+
+# Numpy配列に変換
+ct_array = sitk.GetArrayFromImage(ct_image)
+2. 左心室の手動セグメンテーション
+手動でセグメンテーションを行うためには、医療画像用のソフトウェア（例：ITK-SNAP、3D Slicer）を使用します。
+
+ソフトウェアのインストール
+
+ITK-SNAP
+3D Slicer
+DICOMデータの読み込み
+
+ソフトウェアを開き、DICOMデータをインポートします。
+左心室のセグメンテーション
+
+手動で左心室をセグメント化します。通常、ツールを使用して左心室の輪郭を描き、それを3Dモデルに変換します。
+完了したら、セグメンテーション結果をマスク画像として保存します（NIfTI形式や他の画像形式が一般的です）。
+3. マスクの保存とデータセットの構築
+セグメンテーションされたマスクを対応するCTスキャンとともに保存し、トレーニング用のデータセットを構築します。
+
+python
+コードをコピーする
+import nibabel as nib
+
+# CT画像の保存
+ct_image_nifti = nib.Nifti1Image(ct_array, np.eye(4))
+nib.save(ct_image_nifti, 'ct_image.nii')
+
+# マスクの保存
+mask_array = np.zeros_like(ct_array)  # 手動セグメンテーションの結果に置き換え
+mask_image_nifti = nib.Nifti1Image(mask_array, np.eye(4))
+nib.save(mask_image_nifti, 'mask_image.nii')
+まとめ
+手動でDICOMデータから左心室のセグメンテーションを行うための手順は以下の通りです：
+
+DICOMデータを読み込み、Numpy配列に変換する。
+ITK-SNAPや3D Slicerなどのソフトウェアを使用して、左心室を手動でセグメント化する。
+セグメンテーション結果をマスク画像として保存し、元のCTスキャンと対応付ける。
+これにより、トレーニング用のデータセットが準備できます。
+
+
+
+
+
+
+
