@@ -529,7 +529,107 @@ Cell In[13], line 25, in is_heart_level(slice_image)
 error: OpenCV(4.9.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\shapedescr.cpp:315: error: (-215:Assertion failed) npoints >= 0 && (depth == CV_32F || depth == CV_32S) in function 'cv::contourArea'
 
 
+エラーの原因は、`cv2.contourArea`関数に渡されるマスクが適切な形式ではないためです。`cv2.contourArea`関数は、整数または浮動小数点数の座標を持つ輪郭を必要としますが、現在はマスク全体を渡しています。この問題を解決するために、マスクから輪郭を抽出し、その輪郭の面積を計算する必要があります。
 
+以下は、修正後のコードです：
+
+### 修正後のコード
+
+```python
+import cv2
+import numpy as np
+import SimpleITK as sitk
+
+# DICOMシリーズの読み込み関数
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+# 画像のスタックを読み込み
+dicom_dir = 'path_to_your_dicom_directory'
+ct_image = load_dicom_series(dicom_dir)
+ct_array = sitk.GetArrayFromImage(ct_image)  # Z, Y, X の順
+
+# 各スライスを処理する関数
+def process_slice(slice_image):
+    # 前処理 (ガウシアンフィルタ)
+    smoothed_image = cv2.GaussianBlur(slice_image, (5, 5), 0)
+    
+    # 二値化 (閾値処理)
+    ret, binary_image = cv2.threshold(smoothed_image, 150, 255, cv2.THRESH_BINARY)
+    
+    # 形態素フィルタによる大血管の強調
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    morph_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+    
+    return morph_image
+
+# 心臓レベルのスライスかどうかを判定する関数
+def is_heart_level(slice_image):
+    processed_image = process_slice(slice_image)
+    processed_image = processed_image.astype(np.uint8)  # 確実に8ビットの単一チャンネルに変換
+    
+    num_labels, labels_im = cv2.connectedComponents(processed_image)
+    
+    # ラベルの特性をチェック
+    for label in range(1, num_labels):
+        mask = (labels_im == label).astype(np.uint8)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            # 面積の基準 (適切な閾値に調整)
+            if 1000 < area < 5000:
+                return True
+    return False
+
+# 左心室の断面積を計算する関数
+def calculate_lv_area(slice_image):
+    processed_image = process_slice(slice_image)
+    processed_image = processed_image.astype(np.uint8)  # 確実に8ビットの単一チャンネルに変換
+    
+    num_labels, labels_im = cv2.connectedComponents(processed_image)
+    
+    max_area = 0
+    for label in range(1, num_labels):
+        mask = (labels_im == label).astype(np.uint8)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            # 左心室の断面積を取得 (適切な閾値に調整)
+            if 1000 < area < 5000:
+                if area > max_area:
+                    max_area = area
+    return max_area
+
+# 画像スタックをループして、心臓レベルのスライスを判定し、左心室の断面積が最大のスライスを選択
+max_lv_area = 0
+best_slice = None
+
+for i in range(ct_array.shape[0]):
+    slice_image = ct_array[i, :, :]
+    if is_heart_level(slice_image):
+        lv_area = calculate_lv_area(slice_image)
+        if lv_area > max_lv_area:
+            max_lv_area = lv_area
+            best_slice = slice_image
+
+# 最適なスライスを表示
+if best_slice is not None:
+    cv2.imshow('Best Slice', best_slice)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+else:
+    print("左心室を特定できるスライスが見つかりませんでした。")
+```
+
+### 説明
+1. **輪郭抽出**: `cv2.findContours`関数を使用してマスクから輪郭を抽出します。
+2. **面積計算**: `cv2.contourArea`関数で抽出された輪郭の面積を計算します。
+
+これで、画像スタックから心臓レベルのスライスを判定し、左心室の断面積が最大のスライスを正しく選択できるようになります。
 
 
 
