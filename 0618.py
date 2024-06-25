@@ -1,4 +1,11 @@
 
+input
+胸部非造影raw data
+↓
+サイノグラム
+↓
+CT
+
 https://qiita.com/shinmura0/items/6ec8b1b745176853c9c1
 
 マハラノビスADは
