@@ -7,6 +7,8 @@ input
 CT
 https://www.jstage.jst.go.jp/article/pjsai/JSAI2014/0/JSAI2014_2F32/_pdf
 
+input - output
+
 
 https://qiita.com/shinmura0/items/6ec8b1b745176853c9c1
 
