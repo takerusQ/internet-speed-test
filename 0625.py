@@ -485,4 +485,54 @@ else:
 4. **心臓レベルのスライス判定**: 面積基準を用いて心臓レベルのスライスを判定します。
 5. **左心室の断面積計算**: 各スライスの左心室の断面積を計算し、最大のスライスを選択します。
 
+
+
+
+
+
+
+---------------------------------------------------------------------------
+error                                     Traceback (most recent call last)
+Cell In[12], line 73
+     71 for i in range(ct_array.shape[0]):
+     72     slice_image = ct_array[i, :, :]
+---> 73     if is_heart_level(slice_image):
+     74         lv_area = calculate_lv_area(slice_image)
+     75         if lv_area > max_lv_area:
+
+Cell In[12], line 38, in is_heart_level(slice_image)
+     36 def is_heart_level(slice_image):
+     37     processed_image = process_slice(slice_image)
+---> 38     num_labels, labels_im = cv2.connectedComponents(processed_image)
+     40     # ラベルの特性をチェック
+     41     for label in range(1, num_labels):
+
+error: OpenCV(4.9.0) D:\a\opencv-python\opencv-python\opencv\modules\imgproc\src\connectedcomponents.cpp:5632: error: (-215:Assertion failed) iDepth == CV_8U || iDepth == CV_8S in function 'cv::connectedComponents_sub1'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 この方法は、画像スタックから簡易な画像処理を用いて左心室を特定する実用的な手法です。適切な閾値や形態素フィルタの設定を行うことで、精度を高めることができます。
