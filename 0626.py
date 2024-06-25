@@ -1,3 +1,20 @@
+
+Traceback (most recent call last):
+  File "venv37nonGPUautoencoder3.py", line 108, in <module>
+    z = encoder(x)
+  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\module.py", line 1051, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "venv37nonGPUautoencoder3.py", line 68, in forward
+    x = self.fc(x)
+  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\module.py", line 1051, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\linear.py", line 96, in forward
+    return F.linear(input, self.weight, self.bias)
+  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\functional.py", line 1847, in linear
+    return torch._C._nn.linear(input, weight, bias)
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (8x1048576 and 262144x100)
+
+
 import os
 import numpy as np
 import pydicom
