@@ -382,3 +382,107 @@ for label in range(1, num_labels):
 5. **左心室の特定**: 領域の大きさや形状、大血管との接続を基準に特定。
 
 この方法は簡易な画像処理を組み合わせて左心室を特定する実用的な手法ですが、精度を高めるためには、さらなる調整や追加の特徴抽出が必要となる場合があります。
+
+
+以下のコードは、画像スタックから心臓レベルの画像を判定し、その中で左心室の断面積が最大のスライスを選択するための手順を示しています。
+
+### ステップ概要
+
+1. 画像スタックの読み込み
+2. それぞれのスライスが心臓レベルにあるかどうかを判定
+3. 左心室の断面積が最大のスライスを選択
+
+### ステップ詳細
+
+```python
+import cv2
+import numpy as np
+import SimpleITK as sitk
+
+# DICOMシリーズの読み込み関数
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+# 画像のスタックを読み込み
+dicom_dir = 'path_to_your_dicom_directory'
+ct_image = load_dicom_series(dicom_dir)
+ct_array = sitk.GetArrayFromImage(ct_image)  # Z, Y, X の順
+
+# 各スライスを処理する関数
+def process_slice(slice_image):
+    # 前処理 (ガウシアンフィルタ)
+    smoothed_image = cv2.GaussianBlur(slice_image, (5, 5), 0)
+    
+    # 二値化 (閾値処理)
+    ret, binary_image = cv2.threshold(smoothed_image, 150, 255, cv2.THRESH_BINARY)
+    
+    # 形態素フィルタによる大血管の強調
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    morph_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+    
+    return morph_image
+
+# 心臓レベルのスライスかどうかを判定する関数
+def is_heart_level(slice_image):
+    processed_image = process_slice(slice_image)
+    num_labels, labels_im = cv2.connectedComponents(processed_image)
+    
+    # ラベルの特性をチェック
+    for label in range(1, num_labels):
+        mask = (labels_im == label).astype(np.uint8)
+        area = cv2.contourArea(mask)
+        
+        # 面積の基準 (適切な閾値に調整)
+        if 1000 < area < 5000:
+            return True
+    return False
+
+# 左心室の断面積を計算する関数
+def calculate_lv_area(slice_image):
+    processed_image = process_slice(slice_image)
+    num_labels, labels_im = cv2.connectedComponents(processed_image)
+    
+    max_area = 0
+    for label in range(1, num_labels):
+        mask = (labels_im == label).astype(np.uint8)
+        area = cv2.contourArea(mask)
+        
+        # 左心室の断面積を取得 (適切な閾値に調整)
+        if 1000 < area < 5000:
+            if area > max_area:
+                max_area = area
+    return max_area
+
+# 画像スタックをループして、心臓レベルのスライスを判定し、左心室の断面積が最大のスライスを選択
+max_lv_area = 0
+best_slice = None
+
+for i in range(ct_array.shape[0]):
+    slice_image = ct_array[i, :, :]
+    if is_heart_level(slice_image):
+        lv_area = calculate_lv_area(slice_image)
+        if lv_area > max_lv_area:
+            max_lv_area = lv_area
+            best_slice = slice_image
+
+# 最適なスライスを表示
+if best_slice is not None:
+    cv2.imshow('Best Slice', best_slice)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+else:
+    print("左心室を特定できるスライスが見つかりませんでした。")
+```
+
+### 説明
+1. **画像スタックの読み込み**: `load_dicom_series`関数でDICOMシリーズを読み込み、Numpy配列に変換します。
+2. **前処理**: 各スライスに対してガウシアンフィルタを適用し、平滑化を行います。
+3. **二値化と形態素フィルタ**: 血液の均一な画素値を強調するために閾値処理を行い、形態素フィルタで大血管を強調します。
+4. **心臓レベルのスライス判定**: 面積基準を用いて心臓レベルのスライスを判定します。
+5. **左心室の断面積計算**: 各スライスの左心室の断面積を計算し、最大のスライスを選択します。
+
+この方法は、画像スタックから簡易な画像処理を用いて左心室を特定する実用的な手法です。適切な閾値や形態素フィルタの設定を行うことで、精度を高めることができます。
