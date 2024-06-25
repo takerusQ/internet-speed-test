@@ -309,3 +309,76 @@ ITK-SNAPや3D Slicerなどのソフトウェアを使用して、左心室を手
 
 
 
+
+
+左心室をCT画像から簡易な画像処理で特定するためには、左心室の先験的な特徴を利用して、いくつかの基本的な画像処理手法を組み合わせることが有効です。以下に、そのステップを示します。
+
+### 1. 前処理
+まず、CT画像の前処理を行います。ノイズ除去や平滑化を行い、画像の品質を向上させます。
+
+```python
+import cv2
+import numpy as np
+
+# CT画像の読み込み
+image = cv2.imread('ct_image.png', cv2.IMREAD_GRAYSCALE)
+
+# 平滑化 (ガウシアンフィルタ)
+smoothed_image = cv2.GaussianBlur(image, (5, 5), 0)
+```
+
+### 2. 閾値処理
+次に、閾値処理を用いて血液の均一な画素値を強調します。左心室内部は血液で満たされているため、他の組織と異なる均一な画素値を持つことが特徴です。
+
+```python
+# 二値化 (閾値処理)
+ret, binary_image = cv2.threshold(smoothed_image, 150, 255, cv2.THRESH_BINARY)
+```
+
+### 3. 大血管の検出
+大血管は左心室と接続しているため、大血管を検出することで左心室の位置を特定する手掛かりになります。ここでは、形態素フィルタを用いて大血管を強調します。
+
+```python
+# 形態素フィルタによる大血管の強調
+kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+morph_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+```
+
+### 4. 領域のラベリング
+大血管が強調された画像を基に、領域のラベリングを行います。これにより、連結成分を特定し、大きな領域を左心室候補として抽出します。
+
+```python
+# 連結成分のラベリング
+num_labels, labels_im = cv2.connectedComponents(morph_image)
+
+# ラベリング結果の表示
+label_hue = np.uint8(179*labels_im/np.max(labels_im))
+blank_ch = 255*np.ones_like(label_hue)
+labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
+labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
+labeled_img[label_hue==0] = 0
+```
+
+### 5. 左心室の特定
+ラベリングされた領域から、左心室を特定するためにいくつかの基準を設定します。例えば、領域の大きさや形状、大血管との接続などを考慮します。
+
+```python
+# 各ラベル領域の特性を計算
+for label in range(1, num_labels):
+    mask = np.uint8(labels_im == label)
+    area = cv2.contourArea(mask)
+    # 左心室候補の特定
+    if 1000 < area < 5000:  # 面積の範囲を基準に設定
+        left_ventricle = mask
+        break
+```
+
+### まとめ
+この方法では、CT画像から左心室を特定するために以下の手順を踏みます：
+1. **前処理**: ノイズ除去と平滑化。
+2. **閾値処理**: 血液の均一な画素値を強調。
+3. **大血管の検出**: 形態素フィルタで強調。
+4. **領域のラベリング**: 連結成分を特定。
+5. **左心室の特定**: 領域の大きさや形状、大血管との接続を基準に特定。
+
+この方法は簡易な画像処理を組み合わせて左心室を特定する実用的な手法ですが、精度を高めるためには、さらなる調整や追加の特徴抽出が必要となる場合があります。
