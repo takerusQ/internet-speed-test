@@ -721,5 +721,78 @@ display_slice_with_click(0)
 
 
 
+import cv2
+import numpy as np
+import SimpleITK as sitk
+import matplotlib.pyplot as plt
+from ipywidgets import interact, IntSlider
+
+# DICOMシリーズの読み込み関数
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+# 画像スタックを読み込み
+dicom_dir = 'path_to_your_dicom_directory'  # ここを適切なパスに置き換えてください
+ct_image = load_dicom_series(dicom_dir)
+ct_array = sitk.GetArrayFromImage(ct_image)  # Z, Y, X の順
+
+# グローバル変数
+global selected_slice
+selected_slice = 0
+
+# スライスを表示する関数
+def display_slice(slice_index):
+    global selected_slice
+    selected_slice = slice_index
+    plt.imshow(ct_array[slice_index, :, :], cmap='gray')
+    plt.title(f'Slice {slice_index}')
+    plt.show()
+
+# スライス選択のためのスライダー
+slice_slider = IntSlider(min=0, max=ct_array.shape[0]-1, step=1, description='Slice:')
+interact(display_slice, slice_index=slice_slider)
+
+# ROIを選択し、CT値の平均と分散を計算
+def select_roi_and_calculate_stats():
+    global selected_slice
+    slice_image = ct_array[selected_slice, :, :]
+    
+    # 画像を表示してROIを選択
+    roi = cv2.selectROI("Select ROI", slice_image, fromCenter=False, showCrosshair=True)
+    cv2.destroyWindow("Select ROI")
+    
+    if roi is not None:
+        x, y, w, h = roi
+        roi_slice = slice_image[y:y+h, x:x+w]
+        
+        # CT値の平均と分散を計算
+        mean_val = np.mean(roi_slice)
+        std_val = np.std(roi_slice)
+        
+        print(f'Mean CT value: {mean_val}')
+        print(f'Standard Deviation: {std_val}')
+    else:
+        print("ROI selection was canceled.")
+
+# ボタンを押してROIを選択し、統計量を計算
+import ipywidgets as widgets
+button = widgets.Button(description="Select ROI and Calculate Stats")
+display(button)
+
+def on_button_click(b):
+    select_roi_and_calculate_stats()
+
+button.on_click(on_button_click)
+
+# 初期表示
+display_slice(0)
+
+
+
+
 
 
