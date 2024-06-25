@@ -1,3 +1,32 @@
+
+
+C:\Users\kota\Desktop\suyama>python venv37nonGPUautoencoder3.py
+Epoch: 1, Loss: 0.1892046332359314
+Epoch: 2, Loss: 0.1443829983472824
+Epoch: 3, Loss: 0.11345512916644414
+Epoch: 4, Loss: 0.08195248991250992
+Epoch: 5, Loss: 0.07061671713987987
+Epoch: 6, Loss: 0.051403126368920006
+Epoch: 7, Loss: 0.04143582905332247
+Epoch: 8, Loss: 0.032660175735751786
+Epoch: 9, Loss: 0.031205077345172565
+Epoch: 10, Loss: 0.02857682729760806
+Epoch: 11, Loss: 0.027855150401592255
+Epoch: 12, Loss: 0.025857937211791675
+Epoch: 13, Loss: 0.024509650965531666
+Epoch: 14, Loss: 0.024290218949317932
+Epoch: 15, Loss: 0.025106055662035942
+Epoch: 16, Loss: 0.025076430290937424
+Epoch: 17, Loss: 0.02380253312488397
+Epoch: 18, Loss: 0.023330876603722572
+Epoch: 19, Loss: 0.02296982767681281
+Epoch: 20, Loss: 0.02385132076839606
+OMP: Error #15: Initializing libiomp5md.dll, but found libiomp5md.dll already initialized.
+OMP: Hint This means that multiple copies of the OpenMP runtime have been linked into the program. That is dangerous, since it can degrade performance or cause incorrect results. The best thing to do is to ensure that only a single OpenMP runtime is linked into the process, e.g. by avoiding static linking of the OpenMP runtime in any library. As an unsafe, unsupported, undocumented workaround you can set the environment variable KMP_DUPLICATE_LIB_OK=TRUE to allow the program to continue to execute, but that may cause crashes or silently produce incorrect results. For more information, please see http://www.intel.com/software/products/support/.
+
+
+
+
 import os
 import numpy as np
 import pydicom
