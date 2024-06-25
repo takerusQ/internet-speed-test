@@ -735,7 +735,85 @@ show_slice(0)
 
 このコードをJupyter Lab上で実行すると、画像スタックの任意のスライスに対してROIを指定し、そのROI内のCT値の統計情報を取得できます。
 
+import matplotlib.pyplot as plt
+import numpy as np
+import SimpleITK as sitk
+import cv2
+from ipywidgets import interact, IntSlider
 
+# DICOMシリーズの読み込み関数
+def load_dicom_series(dicom_dir):
+    reader = sitk.ImageSeriesReader()
+    dicom_files = reader.GetGDCMSeriesFileNames(dicom_dir)
+    reader.SetFileNames(dicom_files)
+    image = reader.Execute()
+    return image
+
+# 画像スタックを読み込み
+dicom_dir = 'path_to_your_dicom_directory'  # ここを適切なパスに置き換えてください
+ct_image = load_dicom_series(dicom_dir)
+ct_array = sitk.GetArrayFromImage(ct_image)  # Z, Y, X の順
+
+# グローバル変数
+global selected_slice, roi_center, roi_radius
+selected_slice = 0
+roi_center = None
+roi_radius = 10
+
+# 画像スタックの表示
+def show_slice(slice_index):
+    global selected_slice
+    selected_slice = slice_index
+    plt.imshow(ct_array[slice_index, :, :], cmap='gray')
+    plt.title(f'Slice {slice_index}')
+    plt.show()
+
+# スライス選択のためのスライダー
+slice_slider = IntSlider(min=0, max=ct_array.shape[0]-1, step=1, description='Slice:')
+interact(show_slice, slice_index=slice_slider)
+
+# 画像上のクリックイベントの処理
+def onclick(event):
+    global roi_center
+    if event.inaxes:
+        x, y = int(event.xdata), int(event.ydata)
+        roi_center = (x, y)
+        print(f'ROI center selected at: {roi_center}')
+        calculate_roi_stats()
+
+# ROIのCT値の平均と分散を計算
+def calculate_roi_stats():
+    global roi_center, roi_radius, selected_slice
+    if roi_center is None or selected_slice is None:
+        return
+
+    x, y = roi_center
+    radius = roi_radius
+
+    mask = np.zeros_like(ct_array[selected_slice, :, :], dtype=np.uint8)
+    cv2.circle(mask, (x, y), radius, 1, -1)
+    
+    roi_values = ct_array[selected_slice, mask > 0]
+    mean_val = np.mean(roi_values)
+    std_val = np.std(roi_values)
+
+    print(f'Mean CT value: {mean_val}')
+    print(f'Standard Deviation: {std_val}')
+
+# 半径の入力ウィジェット
+radius_slider = IntSlider(min=1, max=100, step=1, description='Radius:')
+def set_radius(radius):
+    global roi_radius
+    roi_radius = radius
+    print(f'ROI radius set to: {roi_radius}')
+    calculate_roi_stats()
+    
+interact(set_radius, radius=radius_slider)
+
+# 画像上でのクリックを有効に
+fig, ax = plt.subplots()
+cid = fig.canvas.mpl_connect('button_press_event', onclick)
+show_slice(0)
 
 
 
