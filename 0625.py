@@ -797,3 +797,95 @@ display_slice(0)
 
 
 
+
+C:\Users\kota>python -V
+Python 3.8.12
+
+C:\Users\kota>pip list
+Package                 Version
+----------------------- ---------------
+boltons                 23.0.0
+Brotli                  1.1.0
+brotlipy                0.7.0
+certifi                 2023.7.22
+cffi                    1.16.0
+charset-normalizer      3.3.0
+colorama                0.4.6
+conda                   23.9.0
+conda-package-handling  2.2.0
+conda_package_streaming 0.9.0
+connected-components-3d 3.9.1
+cryptography            38.0.4
+cycler                  0.11.0
+fonttools               4.30.0
+idna                    3.4
+imageio                 2.21.0
+jsonpatch               1.33
+jsonpointer             2.4
+kiwisolver              1.4.0
+matplotlib              3.5.1
+menuinst                1.4.18
+networkx                2.8.5
+nibabel                 3.2.2
+numpy                   1.21.4
+opencv-python           4.6.0
+packaging               21.3
+pandas                  1.4.1
+pdfminer.six            20221105
+Pillow                  8.4.0
+pip                     23.3
+pluggy                  1.3.0
+pycosat                 0.6.6
+pycparser               2.21
+pydicom                 2.2.2
+pyOpenSSL               23.2.0
+pyparsing               3.0.7
+PySimpleGUI             4.60.3
+PySocks                 1.7.1
+python-dateutil         2.8.2
+pytz                    2021.3
+PyWavelets              1.3.0
+pywin32                 306
+requests                2.31.0
+ruamel.yaml             0.17.39
+ruamel.yaml.clib        0.2.7
+ruamel-yaml-conda       0.15.80
+scikit-image            0.19.3
+scipy                   1.7.3
+setuptools              68.2.2
+SimpleITK               2.2.0
+SimpleITK-SimpleElastix 2.0.0rc2.dev908
+six                     1.16.0
+tifffile                2022.8.3
+torch                   1.9.0+cu102
+torchaudio              0.9.0
+torchvision             0.10.0
+tqdm                    4.66.1
+typing_extensions       4.0.1
+urllib3                 2.0.7
+wheel                   0.41.2
+win-inet-pton           1.1.0
+zstandard               0.21.0
+WARNING: There was an error checking the latest version of pip.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
