@@ -1,20 +1,3 @@
-
-Traceback (most recent call last):
-  File "venv37nonGPUautoencoder3.py", line 108, in <module>
-    z = encoder(x)
-  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\module.py", line 1051, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "venv37nonGPUautoencoder3.py", line 68, in forward
-    x = self.fc(x)
-  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\module.py", line 1051, in _call_impl
-    return forward_call(*input, **kwargs)
-  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\modules\linear.py", line 96, in forward
-    return F.linear(input, self.weight, self.bias)
-  File "C:\Users\kota\miniconda3\lib\site-packages\torch\nn\functional.py", line 1847, in linear
-    return torch._C._nn.linear(input, weight, bias)
-RuntimeError: mat1 and mat2 shapes cannot be multiplied (8x1048576 and 262144x100)
-
-
 import os
 import numpy as np
 import pydicom
@@ -75,7 +58,7 @@ class Encoder(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, 3, stride=2, padding=1)
         self.conv3 = nn.Conv2d(64, 64, 3, stride=2, padding=1)
-        self.fc = nn.Linear(64 * 64 * 64, Z_DIM)
+        self.fc = nn.Linear(64 * 128 * 128, Z_DIM)  # 修正: 64チャネル、128x128ピクセル
 
     def forward(self, x):
         x = torch.relu(self.conv1(x))
@@ -89,14 +72,14 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(self):
         super(Decoder, self).__init__()
-        self.fc = nn.Linear(Z_DIM, 64 * 64 * 64)
+        self.fc = nn.Linear(Z_DIM, 64 * 128 * 128)  # 修正: 64チャネル、128x128ピクセル
         self.conv1 = nn.ConvTranspose2d(64, 64, 3, stride=2, padding=1, output_padding=1)
         self.conv2 = nn.ConvTranspose2d(64, 32, 3, stride=2, padding=1, output_padding=1)
         self.conv3 = nn.ConvTranspose2d(32, 1, 3, stride=1, padding=1)
 
     def forward(self, x):
         x = self.fc(x)
-        x = x.view(x.size(0), 64, 64, 64)  # Reshape
+        x = x.view(x.size(0), 64, 128, 128)  # Reshape
         x = torch.relu(self.conv1(x))
         x = torch.relu(self.conv2(x))
         x = torch.sigmoid(self.conv3(x))  # 最終出力は0~1にするためsigmoidを使用
