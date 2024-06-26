@@ -186,7 +186,8 @@ def plot_images(original, decoded, window_width, window_level, n=5, save_path="r
 
         # 差分画像
         difference = denormalized_image - original[i].permute(1, 2, 0).squeeze().numpy()
-        ax = plt.subplot(3, n, i + 1 + 2 * n)        plt.imshow(difference, cmap="bwr", vmin=-1, vmax=1)
+        ax = plt.subplot(3, n, i + 1 + 2 * n)        
+        plt.imshow(difference, cmap="bwr", vmin=-1, vmax=1)
         plt.title("Difference")
         plt.axis("off")
 
