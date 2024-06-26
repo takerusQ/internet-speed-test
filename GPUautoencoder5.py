@@ -57,7 +57,7 @@ def load_and_preprocess_dicom_files(dicom_dir, dicomfilepaths):
 _, mizumashi_of_normalizedCTfiles, window_width, window_level = load_and_preprocess_dicom_files(example_person_dicom_dir_path, dicomfilepaths)
 
 # 学習データの準備
-dataset = torch.from_numpy(mizumashi_of_normalizedCTfiles).permute(0, 3, 1, 2).float()
+dataset = torch.from_numpy(mizumashi_of_normalizedCTfiles[20:40]).permute(0, 3, 1, 2).float()
 train_size = int(0.8 * len(dataset))
 val_size = len(dataset) - train_size
 train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
