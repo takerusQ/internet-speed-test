@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import pydicom
-import cv2
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -57,13 +56,7 @@ def load_and_preprocess_dicom_files(dicom_dir, dicomfilepaths):
 _, mizumashi_of_normalizedCTfiles, window_width, window_level = load_and_preprocess_dicom_files(example_person_dicom_dir_path, dicomfilepaths)
 
 # 学習データの準備
-dataset = torch.from_numpy(mizumashi_of_normalizedCTfiles[20:40]).permute(0, 3, 1, 2).float()
-train_size = int(0.8 * len(dataset))
-val_size = len(dataset) - train_size
-train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
-
-train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=8, shuffle=False)
+train_images = torch.from_numpy(mizumashi_of_normalizedCTfiles[20:40]).permute(0, 3, 1, 2).float()
 
 # ハイパーパラメータの設定
 LEARNING_RATE = 0.0005
@@ -105,6 +98,10 @@ class Decoder(nn.Module):
         x = torch.sigmoid(self.conv3(x))  # 最終出力は0~1にするためsigmoidを使用
         return x
 
+# データローダの作成
+dataset = TensorDataset(train_images)
+dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True)
+
 # モデルの定義
 encoder = Encoder()
 decoder = Decoder()
@@ -121,10 +118,8 @@ val_losses = []
 
 # 学習ループ
 for epoch in range(EPOCHS):
-    encoder.train()
-    decoder.train()
     total_train_loss = 0
-    for batch in train_loader:
+    for batch in dataloader:
         x = batch[0]
         optimizer.zero_grad()
         z = encoder(x)
@@ -133,33 +128,30 @@ for epoch in range(EPOCHS):
         loss.backward()
         optimizer.step()
         total_train_loss += loss.item()
-    
-    avg_train_loss = total_train_loss / len(train_loader)
+    avg_train_loss = total_train_loss / len(dataloader)
     train_losses.append(avg_train_loss)
-
-    encoder.eval()
-    decoder.eval()
-    total_val_loss = 0
-    with torch.no_grad():
-        for batch in val_loader:
-            x = batch[0]
-            z = encoder(x)
-            x_hat = decoder(z)
-            val_loss = criterion(x_hat, x)
-            total_val_loss += val_loss.item()
     
-    avg_val_loss = total_val_loss / len(val_loader)
-    val_losses.append(avg_val_loss)
-
+    # Validation lossの計算
     if (epoch + 1) % 5 == 0:
+        encoder.eval()
+        decoder.eval()
+        total_val_loss = 0
+        with torch.no_grad():
+            for batch in dataloader:
+                x = batch[0]
+                z = encoder(x)
+                x_hat = decoder(z)
+                val_loss = criterion(x_hat, x)
+                total_val_loss += val_loss.item()
+        avg_val_loss = total_val_loss / len(dataloader)
+        val_losses.append(avg_val_loss)
         print(f'Epoch: {epoch+1}, Train Loss: {avg_train_loss}, Validation Loss: {avg_val_loss}')
+        encoder.train()
+        decoder.train()
 
 # 画像の復元
-encoder.eval()
-decoder.eval()
-with torch.no_grad():
-    z_points = encoder(dataset)
-    reconst_images = decoder(z_points)
+z_points = encoder(train_images)
+reconst_images = decoder(z_points)
 
 # 損失のプロット関数
 def plot_loss_curve(train_losses, val_losses, save_path="results"):
@@ -194,8 +186,7 @@ def plot_images(original, decoded, window_width, window_level, n=5, save_path="r
 
         # 差分画像
         difference = denormalized_image - original[i].permute(1, 2, 0).squeeze().numpy()
-        ax = plt.subplot(3, n, i + 1 + 2 * n)
-        plt.imshow(difference, cmap="bwr", vmin=-1, vmax=1)
+        ax = plt.subplot(3, n, i + 1 + 2 * n)        plt.imshow(difference, cmap="bwr", vmin=-1, vmax=1)
         plt.title("Difference")
         plt.axis("off")
 
@@ -207,4 +198,4 @@ def plot_images(original, decoded, window_width, window_level, n=5, save_path="r
 plot_loss_curve(train_losses, val_losses)
 
 # トレーニングデータから最初の5つの画像を表示および保存
-plot_images(dataset, reconst_images.detach(), window_width, window_level, n=5)
+plot_images(train_images, reconst_images.detach(), window_width, window_level, n=5)
