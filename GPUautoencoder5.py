@@ -1,3 +1,11 @@
+# 再構築されたデータを元のCT値に戻す関数
+def denormalize_ct_image(normalized_image, window_width, window_level):
+    min_value = window_level - (window_width / 2)
+    max_value = window_level + (window_width / 2)
+    denormalized_image = normalized_image * (max_value - min_value) + min_value
+    return denormalized_image
+
+
 import os
 import numpy as np
 import pydicom
