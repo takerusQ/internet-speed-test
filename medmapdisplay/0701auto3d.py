@@ -303,3 +303,64 @@ def load_models(encoder_path, decoder_path):
 encoder, decoder = load_models(os.path.join(model_save_path, "encoder.pth"), os.path.join(model_save_path, "decoder.pth"))
 
 print("Models loaded successfully for transfer learning.")
+
+
+
+
+
+
+
+ここまで
+
+# 感度、特異度、AUCの計算と結果表示
+
+from sklearn.metrics import roc_auc_score, accuracy_score, confusion_matrix
+
+# 異常度を計算する関数
+def calculate_anomaly_score(patch, model, criterion):
+    with torch.no_grad():
+        output = model(patch.unsqueeze(0))
+        loss = criterion(output, patch.unsqueeze(0))
+    return loss.item()
+
+# 症例ごとの異常度を計算する関数
+def get_case_anomaly_score(scan, model, patch_size):
+    patches = extract_3d_patches(scan, patch_size, num_patches_per_scan)
+    tensor_patches = torch.tensor(patches, dtype=torch.float32).unsqueeze(1)
+    anomaly_scores = [calculate_anomaly_score(patch, model, criterion) for patch in tensor_patches]
+    return max(anomaly_scores)
+
+# 異常スキャンと正常スキャンの異常度計算
+abnormal_ct_files = ["path_to_abnormal_ct1", "path_to_abnormal_ct2", ...] # 異常スキャンのパスをリストで指定
+normal_ct_files = ["path_to_normal_ct1", "path_to_normal_ct2", ...] # 正常スキャンのパスをリストで指定
+
+abnormal_scores = []
+normal_scores = []
+
+for ct_file in abnormal_ct_files:
+    scan = load_ct_scan(ct_file) # CTスキャンをロードする関数
+    score = get_case_anomaly_score(scan, model, patch_size)
+    abnormal_scores.append(score)
+
+for ct_file in normal_ct_files:
+    scan = load_ct_scan(ct_file) # CTスキャンをロードする関数
+    score = get_case_anomaly_score(scan, model, patch_size)
+    normal_scores.append(score)
+
+# ラベルの作成（正常: 0, 異常: 1）
+labels = [0] * len(normal_scores) + [1] * len(abnormal_scores)
+scores = normal_scores + abnormal_scores
+
+# 感度、特異度、AUCの計算
+auc = roc_auc_score(labels, scores)
+print(f'AUC: {auc:.4f}')
+
+# 閾値を決めて感度と特異度を計算
+threshold = 0.5  # 適切な閾値を設定
+predictions = [1 if score > threshold else 0 for score in scores]
+tn, fp, fn, tp = confusion_matrix(labels, predictions).ravel()
+sensitivity = tp / (tp + fn)
+specificity = tn / (tn + fp)
+
+print(f'Sensitivity: {sensitivity:.4f}')
+print(f'Specificity: {specificity:.4f}')
